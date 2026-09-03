@@ -31,8 +31,16 @@ final class MatriculaController
             $codigoCepre = $numeroMatricula;
         } catch (Throwable $exception) {
             $databaseReady = false;
-            $errorMessage = 'No se pudo procesar la matrícula. Verifique los datos e inténtelo nuevamente.';
+            error_log('CEPRE matrícula: ' . get_class($exception) . ' - ' . $exception->getMessage());
+            $errorMessage = $exception instanceof InvalidArgumentException || $exception instanceof RuntimeException
+                ? $exception->getMessage()
+                : 'No se pudo procesar la matrícula. Verifique los datos e inténtelo nuevamente.';
             $numeroMatricula = '00001';
+            try {
+                $catalogos = (new MatriculaModel())->catalogos();
+            } catch (Throwable) {
+                $catalogos = [];
+            }
         }
 
         require __DIR__ . '/../views/matricula/formulario.php';

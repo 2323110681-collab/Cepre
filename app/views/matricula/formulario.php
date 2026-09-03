@@ -26,27 +26,17 @@ $usuarioActual = currentUser();
     <link rel="stylesheet" href="/cepre_untels/public/css/app.css?v=20260903">
 </head>
 <body>
-    <header class="site-header">
-        <a class="brand" href="/cepre_untels/public/" aria-label="CEPRE UNTELS inicio">
-            <span class="brand__mark">C</span>
-            <span><strong>CEPRE</strong><b>UNTELS</b></span>
-        </a>
-        <nav aria-label="Navegación principal">          
-            <span class="user-label"><?= htmlspecialchars($usuarioActual['nombre'] ?? 'Usuario') ?></span>
-            <a href="/cepre_untels/public/logout.php">Salir</a>
-        </nav>
-    </header>
+    <?php require __DIR__ . '/../partials/site-header.php'; ?>
 
     <main class="page-shell" id="ficha">
         <div class="page-heading">
             <p class="eyebrow">Registro de estudiante</p>
             <h1>FICHA DE MATRÍCULA N.° <?= htmlspecialchars($numeroMatricula) ?></h1>
-            <p>MODALIDAD REGULAR - DERECHO A VACANTE</p>
             <button class="button button--new" type="button" id="new-enrollment">+ Registrar nueva matrícula</button>
         </div>
 
         <?php if (!$databaseReady): ?>
-            <div class="alert"><?= $_SERVER['REQUEST_METHOD'] === 'POST' ? 'No se pudo guardar la matrícula.' : 'No se pudieron cargar los catálogos.' ?> <?= htmlspecialchars($errorMessage ?? '', ENT_QUOTES, 'UTF-8') ?></div>
+            <div class="alert"><?= htmlspecialchars($errorMessage ?? 'No se pudo procesar la matrícula.', ENT_QUOTES, 'UTF-8') ?></div>
         <?php endif; ?>
 
         <form class="enrollment-form" method="post" enctype="multipart/form-data" action="#">

@@ -84,7 +84,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     form?.addEventListener('submit', (event) => {
-        if (!form.reportValidity()) event.preventDefault();
+        if (!form.reportValidity()) {
+            event.preventDefault();
+            return;
+        }
+
+        const missingFiles = [...form.querySelectorAll('input[type="file"]')]
+            .filter((field) => field.files.length === 0)
+            .map((field) => field.id === 'foto' ? 'la foto carnet' : 'la copia del documento');
+        if (missingFiles.length > 0) {
+            event.preventDefault();
+            Swal.fire({
+                title: 'Faltan archivos',
+                text: `Adjunte ${missingFiles.join(' y ')} para guardar la matrícula.`,
+                icon: 'warning',
+                confirmButtonColor: '#23313b'
+            });
+        }
     });
 
     function resetPreviews() {

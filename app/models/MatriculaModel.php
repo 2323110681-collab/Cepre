@@ -18,7 +18,7 @@ final class MatriculaModel
         return [
             'carreras' => $this->connection->query("SELECT id_carrera AS id, nombre_carrera AS nombre FROM carreras WHERE estado = 'ACTIVO' ORDER BY nombre_carrera")->fetchAll(),
             'condiciones' => $this->connection->query('SELECT id, nombre FROM condiciones_matricula ORDER BY id')->fetchAll(),
-            'turnos' => $this->connection->query("SELECT id, CASE nombre WHEN 'MANANA' THEN 'MAÑANA' WHEN 'NOCHE' THEN 'NOCHE' END AS nombre FROM turnos WHERE nombre IN ('MANANA', 'NOCHE') ORDER BY id")->fetchAll(),
+            'turnos' => $this->connection->query("SELECT id, CASE nombre WHEN 'MANANA' THEN 'Turno Mañana: 8:00 a.m. a 1:30 p.m.' WHEN 'TARDE' THEN 'Turno Tarde: 2:30 p.m. a 8:00 p.m.' END AS nombre FROM turnos WHERE nombre IN ('MANANA', 'TARDE') ORDER BY id")->fetchAll(),
             'modalidades' => $this->connection->query('SELECT id, nombre FROM modalidades_clase ORDER BY id')->fetchAll(),
             'sectores' => $this->connection->query('SELECT id, nombre FROM sectores ORDER BY id')->fetchAll(),
             'preparaciones' => $this->connection->query('SELECT id, nombre FROM preparaciones_previas ORDER BY id')->fetchAll(),
@@ -32,6 +32,157 @@ final class MatriculaModel
         $nextNumber = (int) $statement->fetchColumn();
 
         return str_pad((string) $nextNumber, 5, '0', STR_PAD_LEFT);
+    }
+
+    public function listarEstudiantes(?int $carreraId = null): array
+    {
+        $sql = 'SELECT m.id AS matricula_id, m.numero, e.id_estudiante, e.codigo_estudiante,
+                       e.apellido_paterno, e.apellido_materno, e.nombres, c.nombre_carrera
+                FROM matriculas m
+                INNER JOIN estudiantes e ON e.id_estudiante = m.estudiante_id
+                INNER JOIN carreras c ON c.id_carrera = m.carrera_id
+                WHERE m.estado <> "ANULADA"';
+        $parameters = [];
+        if ($carreraId !== null) {
+            $sql .= ' AND m.carrera_id = :carrera';
+            $parameters['carrera'] = $carreraId;
+        }
+        $sql .= ' ORDER BY e.apellido_paterno, e.apellido_materno, e.nombres';
+        $statement = $this->connection->prepare($sql);
+        $statement->execute($parameters);
+
+        return $statement->fetchAll();
+    }
+
+    public function fichaEstudiante(int $matriculaId): ?array
+    {
+        $statement = $this->connection->prepare(
+                'SELECT m.id AS matricula_id, m.numero, m.estado, m.fecha_registro,
+                    m.carrera_id, m.modalidad_clase_id, m.condicion_id, m.turno_id,
+                    e.*, c.nombre_carrera, cm.nombre AS condicion_nombre,
+                    t.nombre AS turno_nombre, mc.nombre AS modalidad_nombre,
+                    ia.anio_conclusion_secundaria, ia.pais AS pais_estudios,
+                    ia.departamento_ubigeo AS departamento_estudios,
+                    ia.provincia_ubigeo AS provincia_estudios,
+                    ia.distrito_ubigeo AS distrito_estudios,
+                    s.nombre AS sector_nombre, ia.especificar_sector,
+                    ia.nombre_institucion, ia.nombre_institucion_extranjera,
+                    pp.nombre AS preparacion_nombre, ia.mencion AS mencion_academica,
+                    af.ruta AS foto_ruta, af.mime_type AS foto_mime
+             FROM matriculas m
+             INNER JOIN estudiantes e ON e.id_estudiante = m.estudiante_id
+             INNER JOIN carreras c ON c.id_carrera = m.carrera_id
+             LEFT JOIN condiciones_matricula cm ON cm.id = m.condicion_id
+             LEFT JOIN turnos t ON t.id = m.turno_id
+             LEFT JOIN modalidades_clase mc ON mc.id = m.modalidad_clase_id
+             LEFT JOIN informacion_academica ia ON ia.matricula_id = m.id
+             LEFT JOIN sectores s ON s.id = ia.sector_id
+             LEFT JOIN preparaciones_previas pp ON pp.id = ia.preparacion_previa_id
+             LEFT JOIN archivos_matricula af ON af.matricula_id = m.id
+                 AND af.tipo_archivo_id = (SELECT id FROM tipos_archivo WHERE nombre = "FOTO_CARNET" LIMIT 1)
+             WHERE m.id = :matricula AND m.estado <> "ANULADA"
+             LIMIT 1'
+        );
+        $statement->execute(['matricula' => $matriculaId]);
+        $ficha = $statement->fetch();
+
+        return $ficha === false ? null : $ficha;
+    }
+
+    public function archivoFoto(int $matriculaId): ?array
+    {
+        $statement = $this->connection->prepare(
+            'SELECT af.ruta, af.mime_type
+             FROM archivos_matricula af
+             INNER JOIN matriculas m ON m.id = af.matricula_id
+             INNER JOIN tipos_archivo ta ON ta.id = af.tipo_archivo_id
+             WHERE af.matricula_id = :matricula AND ta.nombre = "FOTO_CARNET"
+               AND m.estado <> "ANULADA"
+             LIMIT 1'
+        );
+        $statement->execute(['matricula' => $matriculaId]);
+        $archivo = $statement->fetch();
+
+        return $archivo === false ? null : $archivo;
+    }
+
+    public function actualizarFicha(int $matriculaId, array $data): void
+    {
+        foreach (['apellido_paterno', 'apellido_materno', 'nombres', 'numero_documento', 'correo', 'fecha_nacimiento', 'telefono_celular'] as $field) {
+            if (trim((string) ($data[$field] ?? '')) === '') {
+                throw new InvalidArgumentException('Complete todos los campos obligatorios.');
+            }
+        }
+        if (!filter_var($data['correo'], FILTER_VALIDATE_EMAIL)) {
+            throw new InvalidArgumentException('El correo electrónico no es válido.');
+        }
+        $this->connection->beginTransaction();
+        try {
+            $lookup = $this->connection->prepare('SELECT estudiante_id FROM matriculas WHERE id = :id AND estado <> "ANULADA"');
+            $lookup->execute(['id' => $matriculaId]);
+            $estudianteId = $lookup->fetchColumn();
+            if ($estudianteId === false) throw new RuntimeException('La ficha no existe.');
+
+            $student = $this->connection->prepare(
+                'UPDATE estudiantes SET apellido_paterno = :paterno, apellido_materno = :materno,
+                 nombres = :nombres, tipo_documento = :tipo_documento, numero_documento = :documento,
+                 sexo = :sexo, fecha_nacimiento = :fecha, email = :email, telefono_casa = :casa,
+                 telefono_celular = :celular, departamento_actual = :departamento_actual,
+                 provincia_actual = :provincia_actual, distrito_actual = :distrito_actual,
+                 direccion_actual = :direccion, pais_nacimiento = :pais_nacimiento,
+                 departamento_nacimiento = :departamento_nacimiento, provincia_nacimiento = :provincia_nacimiento,
+                 distrito_nacimiento = :distrito_nacimiento, anio_concluye_secundaria = :anio,
+                 institucion_educativa = :institucion, preparacion_anterior = :preparacion,
+                 mencion = :mencion WHERE id_estudiante = :estudiante'
+            );
+            $student->execute([
+                'paterno' => trim((string) $data['apellido_paterno']), 'materno' => trim((string) $data['apellido_materno']),
+                'nombres' => trim((string) $data['nombres']), 'tipo_documento' => $data['tipo_documento'] ?? 'DNI',
+                'documento' => trim((string) $data['numero_documento']), 'sexo' => $data['sexo'] ?? 'MASCULINO',
+                'fecha' => $data['fecha_nacimiento'], 'email' => trim((string) $data['correo']),
+                'casa' => trim((string) ($data['telefono_casa'] ?? '')) ?: null, 'celular' => trim((string) $data['telefono_celular']),
+                'departamento_actual' => trim((string) ($data['departamento_actual'] ?? '')) ?: null,
+                'provincia_actual' => trim((string) ($data['provincia_actual'] ?? '')) ?: null,
+                'distrito_actual' => trim((string) ($data['distrito_actual'] ?? '')) ?: null,
+                'direccion' => trim((string) ($data['direccion_actual'] ?? '')) ?: null,
+                'pais_nacimiento' => trim((string) ($data['pais_nacimiento'] ?? '')) ?: null,
+                'departamento_nacimiento' => trim((string) ($data['departamento_nacimiento'] ?? '')) ?: null,
+                'provincia_nacimiento' => trim((string) ($data['provincia_nacimiento'] ?? '')) ?: null,
+                'distrito_nacimiento' => trim((string) ($data['distrito_nacimiento'] ?? '')) ?: null,
+                'anio' => ($data['anio_conclusion_secundaria'] ?? '') !== '' ? (int) $data['anio_conclusion_secundaria'] : null,
+                'institucion' => trim((string) ($data['nombre_institucion'] ?? '')) ?: null,
+                'preparacion' => trim((string) ($data['preparacion_anterior'] ?? '')) ?: null,
+                'mencion' => trim((string) ($data['mencion'] ?? '')) ?: null, 'estudiante' => $estudianteId,
+            ]);
+
+            $registration = $this->connection->prepare(
+                'UPDATE matriculas SET carrera_id = :carrera, modalidad_clase_id = :modalidad,
+                 condicion_id = :condicion, turno_id = :turno WHERE id = :id'
+            );
+            $registration->execute([
+                'carrera' => (int) $data['carrera_id'], 'modalidad' => (int) $data['modalidad_clase_id'],
+                'condicion' => (int) $data['condicion_id'], 'turno' => (int) $data['turno_id'], 'id' => $matriculaId,
+            ]);
+
+            $academic = $this->connection->prepare(
+                'UPDATE informacion_academica SET anio_conclusion_secundaria = :anio, pais = :pais,
+                 sector_id = :sector_id,
+                 nombre_institucion = :institucion, preparacion_previa_id = :preparacion,
+                 mencion = :mencion, especificar_sector = :sector WHERE matricula_id = :matricula'
+            );
+            $academic->execute([
+                'anio' => ($data['anio_conclusion_secundaria'] ?? '') !== '' ? (int) $data['anio_conclusion_secundaria'] : date('Y'),
+                'sector_id' => ($data['sector_id'] ?? '') !== '' ? (int) $data['sector_id'] : null,
+                'pais' => trim((string) ($data['pais_estudios'] ?? 'Perú')), 'institucion' => trim((string) ($data['nombre_institucion'] ?? '')) ?: null,
+                'preparacion' => ($data['preparacion_id'] ?? '') !== '' ? (int) $data['preparacion_id'] : null,
+                'mencion' => trim((string) ($data['mencion'] ?? '')) ?: null, 'sector' => trim((string) ($data['especificar_sector'] ?? '')) ?: null,
+                'matricula' => $matriculaId,
+            ]);
+            $this->connection->commit();
+        } catch (Throwable $exception) {
+            $this->connection->rollBack();
+            throw $exception;
+        }
     }
 
     public function registrar(array $data, array $files): string
@@ -127,9 +278,9 @@ final class MatriculaModel
                 'matricula' => $matriculaId,
                 'anio' => (int) ($data['anio_conclusion_secundaria'] ?: date('Y')),
                 'pais' => trim((string) ($data['pais_estudios'] ?? 'Perú')),
-                'departamento' => ($data['departamento_estudios'] ?? '') !== '' ? trim((string) $data['departamento_estudios']) : null,
-                'provincia' => ($data['provincia_estudios'] ?? '') !== '' ? trim((string) $data['provincia_estudios']) : null,
-                'distrito' => ($data['distrito_estudios'] ?? '') !== '' ? trim((string) $data['distrito_estudios']) : null,
+                'departamento' => $this->ubigeoOrNull($data['departamento_estudios'] ?? ''),
+                'provincia' => $this->ubigeoOrNull($data['provincia_estudios'] ?? ''),
+                'distrito' => $this->ubigeoOrNull($data['distrito_estudios'] ?? ''),
                 'sector' => ($data['sector_id'] ?? '') !== '' ? (int) $data['sector_id'] : null,
                 'especificar' => trim((string) ($data['especificar_sector'] ?? '')) ?: null,
                 'institucion' => trim((string) ($data['nombre_institucion'] ?? '')) ?: null,
@@ -226,7 +377,7 @@ final class MatriculaModel
         if (!in_array($table, $allowedTables, true)) {
             throw new InvalidArgumentException('Catálogo no permitido.');
         }
-        $turnoFilter = $table === 'turnos' ? " AND nombre IN ('MANANA', 'NOCHE')" : '';
+        $turnoFilter = $table === 'turnos' ? " AND nombre IN ('MANANA', 'TARDE')" : '';
         $statement = $this->connection->prepare("SELECT nombre FROM {$table} WHERE id = :id{$turnoFilter}");
         $statement->execute(['id' => (int) $id]);
         $name = $statement->fetchColumn();
@@ -234,5 +385,17 @@ final class MatriculaModel
             throw new RuntimeException('Seleccione una condición y un turno válidos.');
         }
         return (string) $name;
+    }
+
+    private function ubigeoOrNull(mixed $value): ?string
+    {
+        $code = trim((string) $value);
+        if ($code === '') return null;
+
+        $statement = $this->connection->prepare('SELECT codigo FROM ubigeos WHERE codigo = :codigo LIMIT 1');
+        $statement->execute(['codigo' => $code]);
+        $validCode = $statement->fetchColumn();
+
+        return $validCode === false ? null : (string) $validCode;
     }
 }
