@@ -15,6 +15,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('download-form')?.addEventListener('click', () => window.print());
 
+    const dniInput = document.getElementById('numero-documento');
+    const dniStatus = document.getElementById('dni-status');
+    let dniRequest = null;
+    dniInput?.addEventListener('input', async () => {
+        dniInput.value = dniInput.value.replace(/\D/g, '').slice(0, 8);
+        if (dniInput.value.length !== 8) {
+            dniStatus.textContent = '';
+            return;
+        }
+
+        dniStatus.textContent = 'Consultando...';
+        dniRequest?.abort();
+        dniRequest = new AbortController();
+        try {
+            const response = await fetch(`/cepre_untels/public/api/dni.php?numero=${encodeURIComponent(dniInput.value)}`, {
+                signal: dniRequest.signal,
+                headers: { Accept: 'application/json' }
+            });
+            const responseText = await response.text();
+            let result;
+            try {
+                result = JSON.parse(responseText);
+            } catch {
+                throw new Error('El servidor devolvió una respuesta no válida.');
+            }
+            if (!response.ok) throw new Error(result.error || 'No se pudo consultar el DNI.');
+
+            document.getElementById('apellido-paterno').value = result.apellido_paterno || '';
+            document.getElementById('apellido-materno').value = result.apellido_materno || '';
+            document.getElementById('nombres').value = result.nombres || '';
+            dniStatus.textContent = 'Datos encontrados.';
+        } catch (error) {
+            if (error.name === 'AbortError') return;
+            dniStatus.textContent = error.message;
+        }
+    });
+
     document.querySelectorAll('select[data-location="departamento"]').forEach((departmentSelect) => {
         const prefix = departmentSelect.id.replace('departamento', '');
         const provinceSelect = document.getElementById(`provincia${prefix}`);
@@ -42,10 +79,107 @@ document.addEventListener('DOMContentLoaded', () => {
     if (birthCountry) toggleBirthplaceFields(birthCountry.value);
     if (birthCountry) toggleForeignCountry(birthCountry.value);
 
-    document.querySelectorAll('#semestre').forEach((field) => {
-        field.addEventListener('change', updateStudentCode);
+    const disabilitySelect = document.getElementById('discapacidad');
+    const disabilitySection = document.getElementById('seccion-discapacidad');
+    const disabilityType = document.getElementById('tipo-discapacidad');
+    const otherDisability = document.getElementById('otro-tipo-discapacidad');
+    const toggleDisability = () => {
+        const enabled = disabilitySelect?.value === '1';
+        if (!disabilitySection) return;
+        disabilitySection.hidden = !enabled;
+        disabilitySection.querySelectorAll('select, input, textarea').forEach((field) => {
+            field.required = enabled && field.id !== 'otro-tipo-especificar';
+            if (!enabled) field.value = field.tagName === 'SELECT' ? '0' : '';
+        });
+        if (!enabled) disabilityType.value = '';
+        toggleOtherDisability();
+    };
+    const toggleOtherDisability = () => {
+        if (!otherDisability) return;
+        const enabled = disabilitySelect?.value === '1' && disabilityType?.value === 'otra';
+        otherDisability.hidden = !enabled;
+        const field = document.getElementById('otro-tipo-especificar');
+        if (field) { field.required = enabled; if (!enabled) field.value = ''; }
+    };
+    disabilitySelect?.addEventListener('change', toggleDisability);
+    disabilityType?.addEventListener('change', toggleOtherDisability);
+    toggleDisability();
+
+    const certificateSelect = document.getElementById('certificado-discapacidad');
+    const certificateSection = document.getElementById('adjunto-certificado-discapacidad');
+    const certificateInput = document.getElementById('archivo-certificado-discapacidad');
+    const toggleCertificate = () => {
+        const enabled = disabilitySelect?.value === '1' && certificateSelect?.value === '1';
+        if (!certificateSection || !certificateInput) return;
+        certificateSection.hidden = !enabled;
+        certificateInput.disabled = !enabled;
+        certificateInput.required = enabled;
+        if (!enabled) certificateInput.value = '';
+    };
+    certificateSelect?.addEventListener('change', toggleCertificate);
+    disabilitySelect?.addEventListener('change', toggleCertificate);
+    toggleCertificate();
+
+    const discoverySelect = document.getElementById('como-se-entero-cepre');
+    const otherDiscovery = document.getElementById('otro-como-se-entero');
+    const otherDiscoveryInput = document.getElementById('especificar-como-se-entero');
+    const toggleOtherDiscovery = () => {
+        const enabled = discoverySelect?.value === 'otro';
+        if (!otherDiscovery || !otherDiscoveryInput) return;
+        otherDiscovery.hidden = !enabled;
+        otherDiscoveryInput.disabled = !enabled;
+        otherDiscoveryInput.required = enabled;
+        if (!enabled) otherDiscoveryInput.value = '';
+    };
+    discoverySelect?.addEventListener('change', toggleOtherDiscovery);
+    toggleOtherDiscovery();
+
+    const turnSelect = document.getElementById('turno');
+    const codeInput = document.getElementById('codigo-cepre');
+    const formTitle = document.getElementById('titulo-ficha');
+    const updateTurnPresentation = () => {
+        if (!turnSelect || !codeInput) return;
+        const selectedTurn = turnSelect.options[turnSelect.selectedIndex]?.textContent || '';
+        const isSchool = selectedTurn.toLocaleLowerCase().includes('escolar');
+        const code = isSchool ? codeInput.dataset.codigoEscolar : codeInput.dataset.codigoRegular;
+        codeInput.value = code || '';
+        if (formTitle) {
+            const number = formTitle.dataset.numeroFicha || '';
+            formTitle.textContent = `FICHA DE MATRÍCULA N.° ${number} - ${isSchool ? 'TURNO ESCOLAR' : 'TURNO MAÑANA/TARDE'}`;
+        }
+    };
+    turnSelect?.addEventListener('change', updateTurnPresentation);
+    updateTurnPresentation();
+
+    document.getElementById('fecha-nacimiento')?.addEventListener('change', (event) => {
+        const birthDate = new Date(`${event.target.value}T00:00:00`);
+        if (!event.target.value || Number.isNaN(birthDate.getTime())) return;
+
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const birthdayHasNotHappened = today.getMonth() < birthDate.getMonth()
+            || (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate());
+        if (birthdayHasNotHappened) age -= 1;
+
+        if (age < 18) {
+            toggleAcademicFields(true);
+            Swal.fire({
+                title: 'Upps ! eres menor de edad',
+                text: 'Debes brindarnos los datos de tus apoderados.',
+                icon: 'info',
+                confirmButtonText: 'Continuar',
+                confirmButtonColor: '#23313b'
+            }).then((result) => {
+                if (!result.isConfirmed) return;
+                const guardianSection = document.getElementById('datos-apoderado');
+                guardianSection.hidden = false;
+                guardianSection.querySelectorAll('input').forEach((field) => { field.required = true; });
+                guardianSection.querySelector('input')?.focus();
+            });
+        } else {
+            toggleAcademicFields(false);
+        }
     });
-    updateStudentCode();
 
     document.getElementById('clear-form')?.addEventListener('click', () => {
         Swal.fire({
@@ -61,6 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!result.isConfirmed) return;
             form.reset();
             resetPreviews();
+            resetConditionalFields();
             Swal.fire({ title: 'Ficha limpiada', text: 'Los datos ingresados fueron eliminados.', icon: 'success', confirmButtonColor: '#23313b' });
         });
     });
@@ -68,7 +203,12 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('new-enrollment')?.addEventListener('click', () => {
         const hasData = [...form.querySelectorAll('input, select, textarea')]
             .some((field) => field.type === 'file' ? field.files.length > 0 : field.value !== '');
-        const startNew = () => { form.reset(); resetPreviews(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+        const startNew = () => {
+            form.reset();
+            resetPreviews();
+            resetConditionalFields();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
         if (!hasData) return startNew();
 
         Swal.fire({
@@ -108,6 +248,21 @@ document.addEventListener('DOMContentLoaded', () => {
         previews.documento.textContent = 'DNI';
     }
 });
+
+function toggleAcademicFields(isMinor) {
+    document.querySelectorAll('[data-academic-adult]').forEach((field) => {
+        field.hidden = isMinor;
+        field.style.display = isMinor ? 'none' : '';
+    });
+}
+
+function resetConditionalFields() {
+    toggleAcademicFields(false);
+    const guardianSection = document.getElementById('datos-apoderado');
+    if (!guardianSection) return;
+    guardianSection.hidden = true;
+    guardianSection.querySelectorAll('input').forEach((field) => { field.required = false; });
+}
 
 function showFilePreview(input) {
     const preview = document.querySelector(input.id === 'foto' ? '.preview--photo' : '.preview--document');
@@ -181,19 +336,6 @@ function toggleForeignCountry(country) {
     countryInput.hidden = !isForeign;
     countryInput.disabled = !isForeign;
     countryInput.required = isForeign;
-}
-
-function updateStudentCode() {
-    const codeInput = document.getElementById('codigo-cepre');
-    const semesterInput = document.getElementById('semestre');
-    const studentCode = document.getElementById('codigo-alumno');
-    if (!codeInput || !semesterInput || !studentCode) return;
-
-    const code = codeInput.value;
-    const year = String(new Date().getFullYear()).slice(-2);
-    studentCode.value = code.length === 5
-        ? `${year}${semesterInput.value}${code}`
-        : 'Se generará al completar';
 }
 
 async function loadLocations(parentCode, select) {

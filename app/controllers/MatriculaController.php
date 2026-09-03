@@ -28,7 +28,14 @@ final class MatriculaController
             $numeroRegistrado = $registroExitoso ? (string) ($_GET['numero'] ?? '') : null;
             $catalogos = $model->catalogos();
             $numeroMatricula = $model->siguienteNumero();
-            $codigoCepre = $numeroMatricula;
+            $turnoRegularId = (int) ($catalogos['turnos'][0]['id'] ?? 0);
+            $turnoEscolarId = 0;
+            foreach ($catalogos['turnos'] as $turno) {
+                if (stripos((string) $turno['nombre'], 'Escolar') !== false) $turnoEscolarId = (int) $turno['id'];
+            }
+            $codigoCepreRegular = $model->siguienteCodigoCepre($turnoRegularId, '2027-1');
+            $codigoCepreEscolar = $model->siguienteCodigoCepre($turnoEscolarId, '2027-1');
+            $codigoCepre = $codigoCepreRegular;
         } catch (Throwable $exception) {
             $databaseReady = false;
             error_log('CEPRE matrícula: ' . get_class($exception) . ' - ' . $exception->getMessage());

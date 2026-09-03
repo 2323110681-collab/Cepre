@@ -32,7 +32,7 @@ function fichaValue(array $ficha, string $key): string
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" href="/cepre_untels/public/css/app.css?v=20260903">
+    <link rel="stylesheet" href="/cepre_untels/public/css/app.css?v=20260904">
 </head>
 <body>
     <?php require __DIR__ . '/../app/views/partials/site-header.php'; ?>
@@ -147,6 +147,12 @@ function fichaValue(array $ficha, string $key): string
                             <div><dt>Mención</dt><dd><?= fichaValue($ficha, 'mencion_academica') !== 'No registrado' ? fichaValue($ficha, 'mencion_academica') : fichaValue($ficha, 'mencion') ?></dd></div>
                             <div><dt>Especificar sector</dt><dd><?= fichaValue($ficha, 'especificar_sector') ?></dd></div>
                             <div><dt>Institución extranjera</dt><dd><?= fichaValue($ficha, 'nombre_institucion_extranjera') ?></dd></div>
+                            <div><dt>Discapacidad</dt><dd><?= (int) ($ficha['tiene_discapacidad'] ?? 0) === 1 ? 'Sí' : 'No' ?></dd></div>
+                            <div><dt>Tipo de discapacidad</dt><dd><?= fichaValue($ficha, 'tipo_discapacidad') !== 'No registrado' ? fichaValue($ficha, 'tipo_discapacidad') : fichaValue($ficha, 'otro_tipo_discapacidad') ?></dd></div>
+                            <div><dt>Grado de discapacidad</dt><dd><?= fichaValue($ficha, 'grado_discapacidad') ?></dd></div>
+                            <div><dt>Certificado de discapacidad</dt><dd><?= (int) ($ficha['tiene_certificado_discapacidad'] ?? 0) === 1 ? 'Sí' : 'No' ?></dd></div>
+                            <div class="detail-grid__wide"><dt>Necesidades especiales o adecuaciones</dt><dd><?= fichaValue($ficha, 'necesidades_especiales') ?></dd></div>
+                            <div><dt>¿Cómo se enteró de la CEPRE UNTELS?</dt><dd><?= fichaValue($ficha, 'como_se_entero_cepre') ?></dd></div>
                         </dl>
                     </div>
                 </article>

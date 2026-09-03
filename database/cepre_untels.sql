@@ -93,6 +93,13 @@ CREATE TABLE IF NOT EXISTS informacion_academica (
     nombre_institucion_extranjera VARCHAR(150) NULL,
     preparacion_previa_id TINYINT UNSIGNED NULL,
     mencion VARCHAR(120) NULL,
+    tiene_discapacidad BOOLEAN NOT NULL DEFAULT FALSE,
+    tipo_discapacidad VARCHAR(30) NULL,
+    otro_tipo_discapacidad VARCHAR(120) NULL,
+    grado_discapacidad VARCHAR(20) NULL,
+    necesidades_especiales VARCHAR(500) NULL,
+    tiene_certificado_discapacidad BOOLEAN NOT NULL DEFAULT FALSE,
+    como_se_entero_cepre VARCHAR(150) NULL,
     CONSTRAINT fk_academica_matricula FOREIGN KEY (matricula_id) REFERENCES matriculas (id) ON DELETE CASCADE,
     CONSTRAINT fk_academica_departamento FOREIGN KEY (departamento_ubigeo) REFERENCES ubigeos (codigo),
     CONSTRAINT fk_academica_provincia FOREIGN KEY (provincia_ubigeo) REFERENCES ubigeos (codigo),
@@ -133,13 +140,26 @@ CREATE TABLE IF NOT EXISTS archivos_matricula (
 
 UPDATE condiciones_matricula SET nombre = 'EXTRAORDINARIO' WHERE nombre = 'EXONERADO';
 INSERT IGNORE INTO condiciones_matricula (nombre) VALUES ('ORDINARIO'), ('EXTRAORDINARIO');
-INSERT IGNORE INTO turnos (nombre) VALUES ('MANANA'), ('TARDE'), ('NOCHE');
+INSERT IGNORE INTO turnos (nombre) VALUES ('MANANA'), ('TARDE'), ('ESCOLAR'), ('NOCHE');
 INSERT IGNORE INTO modalidades_clase (nombre) VALUES ('PRESENCIAL'), ('VIRTUAL');
 INSERT IGNORE INTO sectores (nombre) VALUES ('PUBLICO'), ('PRIVADO'), ('OTRO');
 INSERT IGNORE INTO preparaciones_previas (nombre) VALUES ('ACADEMIA'), ('COLEGIO'), ('AUTOPREPARACION'), ('OTRO');
-INSERT IGNORE INTO tipos_archivo (nombre) VALUES ('FOTO_CARNET'), ('COPIA_DOCUMENTO');
+INSERT IGNORE INTO tipos_archivo (nombre) VALUES ('FOTO_CARNET'), ('COPIA_DOCUMENTO'), ('CERTIFICADO_DISCAPACIDAD');
+UPDATE periodos SET nombre = '2026-I' WHERE nombre = 'Ciclo 2026-I';
 INSERT IGNORE INTO periodos (nombre, fecha_inicio, fecha_fin)
-VALUES ('Ciclo 2026-I', '2026-01-01', '2026-07-31');
+VALUES ('2026-I', '2026-01-01', '2026-07-31');
+INSERT IGNORE INTO periodos (nombre, fecha_inicio, fecha_fin)
+VALUES ('2027-1', '2026-08-01', '2027-02-28'),
+       ('2027-2', '2027-03-01', '2027-07-31'),
+       ('2028-1', '2027-08-01', '2027-12-31'),
+       ('2028-2', '2028-01-01', '2028-07-31');
+INSERT IGNORE INTO periodos (nombre, fecha_inicio, fecha_fin)
+VALUES ('2026-I', '2026-01-01', '2026-07-31'),
+       ('2026-II', '2026-08-01', '2026-12-31'),
+       ('2027-I', '2027-01-01', '2027-07-31'),
+       ('2027-II', '2027-08-01', '2027-12-31'),
+       ('2028-I', '2028-01-01', '2028-07-31'),
+       ('2028-II', '2028-08-01', '2028-12-31');
 
 INSERT INTO carreras (nombre_carrera, descripcion, estado)
 SELECT 'Ingeniería de Sistemas', 'Carrera profesional', 'ACTIVO'

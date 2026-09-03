@@ -53,7 +53,7 @@ function selectedValue(array $ficha, string $key, mixed $value): string
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1;100..900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/cepre_untels/public/css/app.css?v=20260903">
+    <link rel="stylesheet" href="/cepre_untels/public/css/app.css?v=20260904">
 </head>
 <body>
     <?php require __DIR__ . '/../app/views/partials/site-header.php'; ?>
@@ -98,6 +98,13 @@ function selectedValue(array $ficha, string $key, mixed $value): string
                 <div class="field"><label for="preparacion">Preparación previa</label><select id="preparacion" name="preparacion_id"><option value="">No registrado</option><?php foreach ($catalogos['preparaciones'] as $item): ?><option value="<?= (int) $item['id'] ?>" <?= selectedValue($ficha, 'preparacion_previa_id', $item['id']) ?>><?= htmlspecialchars($item['nombre'], ENT_QUOTES, 'UTF-8') ?></option><?php endforeach; ?></select></div>
                 <div class="field"><label for="mencion">Mención</label><input id="mencion" name="mencion" value="<?= editValue($ficha, 'mencion_academica') ?>"></div>
                 <div class="field"><label for="extranjera">Institución extranjera</label><input id="extranjera" name="nombre_institucion_extranjera" value="<?= editValue($ficha, 'nombre_institucion_extranjera') ?>"></div>
+                <div class="field"><label for="discapacidad">¿Tiene alguna discapacidad?</label><select id="discapacidad" name="tiene_discapacidad"><option value="0" <?= selectedValue($ficha, 'tiene_discapacidad', 0) ?>>No</option><option value="1" <?= selectedValue($ficha, 'tiene_discapacidad', 1) ?>>Sí</option></select></div>
+                <div class="field"><label for="tipo-discapacidad">Tipo de discapacidad</label><input id="tipo-discapacidad" name="tipo_discapacidad" value="<?= editValue($ficha, 'tipo_discapacidad') ?>"></div>
+                <div class="field"><label for="otro-tipo-discapacidad">Especificar discapacidad</label><input id="otro-tipo-discapacidad" name="otro_tipo_discapacidad" value="<?= editValue($ficha, 'otro_tipo_discapacidad') ?>"></div>
+                <div class="field"><label for="grado-discapacidad">Grado de discapacidad</label><input id="grado-discapacidad" name="grado_discapacidad" value="<?= editValue($ficha, 'grado_discapacidad') ?>"></div>
+                <div class="field field--span-2"><label for="necesidades-especiales">Necesidades especiales o adecuaciones</label><textarea id="necesidades-especiales" name="necesidades_especiales" rows="3"><?= editValue($ficha, 'necesidades_especiales') ?></textarea></div>
+                <div class="field"><label for="certificado-discapacidad">¿Posee certificado?</label><select id="certificado-discapacidad" name="tiene_certificado_discapacidad"><option value="0" <?= selectedValue($ficha, 'tiene_certificado_discapacidad', 0) ?>>No</option><option value="1" <?= selectedValue($ficha, 'tiene_certificado_discapacidad', 1) ?>>Sí</option></select></div>
+                <div class="field field--span-2"><label for="como-se-entero-cepre">¿Cómo se enteró de la CEPRE UNTELS?</label><input id="como-se-entero-cepre" name="como_se_entero_cepre" value="<?= editValue($ficha, 'como_se_entero_cepre') ?>" maxlength="150"></div>
             </div></section>
             <div class="form-footer"><span>La foto actual se conserva.</span><div class="form-footer__actions"><a class="button button--clear" href="/cepre_untels/public/fichas.php?carrera_id=<?= (int) $ficha['carrera_id'] ?>&matricula_id=<?= $matriculaId ?>">Cancelar</a><button class="button button--submit" type="submit">Guardar cambios</button></div></div>
         </form>
