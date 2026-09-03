@@ -55,23 +55,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="icon" type="image/png" href="/cepre_untels/public/img/cepre.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/cepre_untels/public/css/app.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1;100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/cepre_untels/public/css/app.css?v=20260903-login">
 </head>
 <body class="login-page">
     <main class="login-card">
-        <div class="login-brand"><span class="brand__mark">C</span><span><strong>CEPRE</strong><b>UNTELS</b></span></div>
-        <p class="eyebrow">Sistema de matrícula</p>
-        <h1>Iniciar sesión</h1>
-        <p class="login-copy">Ingresa tus credenciales para continuar.</p>
-        <?php if ($errorMessage !== null): ?>
-            <div class="alert" role="alert"><?= htmlspecialchars($errorMessage, ENT_QUOTES, 'UTF-8') ?></div>
-        <?php endif; ?>
-        <form method="post" class="login-form">
-            <div class="field"><label for="login">Usuario o correo</label><input id="login" name="login" type="text" autocomplete="username" required autofocus></div>
-            <div class="field"><label for="password">Contraseña</label><input id="password" name="password" type="password" autocomplete="current-password" required></div>
-            <button class="button button--submit" type="submit">Ingresar</button>
-        </form>
+        <section class="login-panel">
+            <img class="login-panel__logo" src="/cepre_untels/public/img/cepre.png" alt="CEPRE UNTELS">
+            <p class="eyebrow">Acceso institucional</p>
+            <h2>Iniciar sesión</h2>
+            <p class="login-copy">Ingresa tus credenciales para continuar.</p>
+            <?php if ($errorMessage !== null): ?>
+                <div class="alert" role="alert"><?= htmlspecialchars($errorMessage, ENT_QUOTES, 'UTF-8') ?></div>
+            <?php endif; ?>
+            <form method="post" class="login-form">
+                <div class="field"><label for="login">Usuario o correo</label><input id="login" name="login" type="text" autocomplete="username" required autofocus></div>
+                <div class="field"><label for="password">Contraseña</label><input id="password" name="password" type="password" autocomplete="current-password" required></div>
+                <button class="button button--submit" type="submit">Ingresar</button>
+            </form>
+        </section>
     </main>
 </body>
 </html>
