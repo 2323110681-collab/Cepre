@@ -15,6 +15,18 @@ final class MatriculaModel
 
     public function catalogos(): array
     {
+        $districtNames = $this->districtNames();
+        $districts = $this->connection->query(
+            "SELECT DISTINCT TRIM(distrito_actual) AS id
+             FROM estudiantes
+             WHERE distrito_actual IS NOT NULL AND distrito_actual <> ''"
+        )->fetchAll();
+        foreach ($districts as &$district) {
+            $district['nombre'] = $districtNames[$district['id']] ?? $district['id'];
+        }
+        unset($district);
+        usort($districts, static fn (array $left, array $right): int => strcasecmp($left['nombre'], $right['nombre']));
+
         return [
             'carreras' => $this->connection->query("SELECT id_carrera AS id, nombre_carrera AS nombre FROM carreras WHERE estado = 'ACTIVO' ORDER BY nombre_carrera")->fetchAll(),
             'condiciones' => $this->connection->query('SELECT id, nombre FROM condiciones_matricula ORDER BY id')->fetchAll(),
@@ -24,8 +36,24 @@ final class MatriculaModel
             'sectores' => $this->connection->query('SELECT id, nombre FROM sectores ORDER BY id')->fetchAll(),
             'preparaciones' => $this->connection->query('SELECT id, nombre FROM preparaciones_previas ORDER BY id')->fetchAll(),
             'departamentos' => $this->connection->query("SELECT TRIM(codigo) AS codigo, nombre FROM ubigeos WHERE nivel = 'DEPARTAMENTO' ORDER BY nombre")->fetchAll(),
-            'distritos' => $this->connection->query("SELECT DISTINCT distrito_actual AS nombre FROM estudiantes WHERE distrito_actual IS NOT NULL AND distrito_actual <> '' ORDER BY distrito_actual")->fetchAll(),
+            'distritos' => $districts,
         ];
+    }
+
+    private function districtNames(): array
+    {
+        $path = __DIR__ . '/../data/ubigeos/distritos.json';
+        $districts = json_decode((string) file_get_contents($path), true);
+        $names = [];
+        foreach (is_array($districts) ? $districts : [] as $locations) {
+            foreach (is_array($locations) ? $locations : [] as $location) {
+                if (!empty($location['id_ubigeo']) && !empty($location['nombre_ubigeo'])) {
+                    $names[(string) $location['id_ubigeo']] = (string) $location['nombre_ubigeo'];
+                }
+            }
+        }
+
+        return $names;
     }
 
     public function reportes(
@@ -75,6 +103,7 @@ final class MatriculaModel
                     LEFT JOIN informacion_academica ia ON ia.matricula_id = m.id
                     LEFT JOIN carreras c ON c.id_carrera = m.carrera_id
                     LEFT JOIN sectores s ON s.id = ia.sector_id
+                    LEFT JOIN ubigeos d ON TRIM(d.codigo) = TRIM(e.distrito_actual)
                     WHERE {$where} {$groupBy} {$orderBy}";
             $statement = $this->connection->prepare($sql);
             $statement->execute($parameters);
@@ -118,10 +147,22 @@ final class MatriculaModel
             'por_dia' => array_values($dailyIndex),
             'por_sexo' => $query('COALESCE(NULLIF(e.sexo, ""), "No registrado") AS etiqueta, COUNT(*) AS total', 'GROUP BY e.sexo', 'ORDER BY total DESC'),
             'por_carrera' => $query('COALESCE(c.nombre_carrera, "No registrado") AS etiqueta, COUNT(*) AS total', 'GROUP BY c.nombre_carrera', 'ORDER BY total DESC, etiqueta'),
-            'por_distrito' => $query('COALESCE(NULLIF(e.distrito_actual, ""), "No registrado") AS etiqueta, COUNT(*) AS total', 'GROUP BY e.distrito_actual', 'ORDER BY total DESC, etiqueta'),
+            'por_distrito' => $this->districtReport($query('COALESCE(NULLIF(e.distrito_actual, ""), "No registrado") AS etiqueta, COUNT(*) AS total', 'GROUP BY e.distrito_actual', 'ORDER BY total DESC, etiqueta')),
             'por_sector' => $query('COALESCE(s.nombre, "No registrado") AS etiqueta, COUNT(*) AS total', 'GROUP BY s.nombre', 'ORDER BY total DESC, etiqueta'),
             'por_conocimiento' => $query('COALESCE(NULLIF(ia.como_se_entero_cepre, ""), "No registrado") AS etiqueta, COUNT(*) AS total', 'GROUP BY ia.como_se_entero_cepre', 'ORDER BY total DESC, etiqueta'),
         ];
+    }
+
+    private function districtReport(array $rows): array
+    {
+        $names = $this->districtNames();
+        foreach ($rows as &$row) {
+            $row['etiqueta'] = $names[(string) $row['etiqueta']] ?? $row['etiqueta'];
+        }
+        unset($row);
+        usort($rows, static fn (array $left, array $right): int => (int) $right['total'] <=> (int) $left['total'] ?: strcasecmp($left['etiqueta'], $right['etiqueta']));
+
+        return $rows;
     }
 
     public function siguienteNumero(): string
@@ -190,7 +231,8 @@ final class MatriculaModel
                     ia.tiene_discapacidad, ia.tipo_discapacidad, ia.otro_tipo_discapacidad,
                     ia.grado_discapacidad, ia.necesidades_especiales,
                     ia.tiene_certificado_discapacidad, ia.como_se_entero_cepre,
-                    af.ruta AS foto_ruta, af.mime_type AS foto_mime
+                    af.ruta AS foto_ruta, af.mime_type AS foto_mime,
+                    cert.ruta AS certificado_ruta
              FROM matriculas m
              INNER JOIN estudiantes e ON e.id_estudiante = m.estudiante_id
              INNER JOIN carreras c ON c.id_carrera = m.carrera_id
@@ -202,35 +244,57 @@ final class MatriculaModel
              LEFT JOIN preparaciones_previas pp ON pp.id = ia.preparacion_previa_id
              LEFT JOIN archivos_matricula af ON af.matricula_id = m.id
                  AND af.tipo_archivo_id = (SELECT id FROM tipos_archivo WHERE nombre = "FOTO_CARNET" LIMIT 1)
+             LEFT JOIN archivos_matricula cert ON cert.matricula_id = m.id
+                 AND cert.tipo_archivo_id = (SELECT id FROM tipos_archivo WHERE nombre = "CERTIFICADO_DISCAPACIDAD" LIMIT 1)
              WHERE m.id = :matricula AND m.estado <> "ANULADA"
              LIMIT 1'
         );
         $statement->execute(['matricula' => $matriculaId]);
         $ficha = $statement->fetch();
 
+        if ($ficha !== false) {
+            $districtNames = $this->districtNames();
+            $ficha['distrito_actual_nombre'] = $districtNames[(string) ($ficha['distrito_actual'] ?? '')]
+                ?? ($ficha['distrito_actual'] ?? null);
+            $ficha['distrito_nacimiento_nombre'] = $districtNames[(string) ($ficha['distrito_nacimiento'] ?? '')]
+                ?? ($ficha['distrito_nacimiento'] ?? null);
+            $ficha['distrito_estudios_nombre'] = $districtNames[(string) ($ficha['distrito_estudios'] ?? '')]
+                ?? ($ficha['distrito_estudios'] ?? null);
+        }
+
         return $ficha === false ? null : $ficha;
     }
 
     public function archivoFoto(int $matriculaId): ?array
+    {
+        return $this->archivoPorTipo($matriculaId, 'FOTO_CARNET');
+    }
+
+    public function archivoCertificado(int $matriculaId): ?array
+    {
+        return $this->archivoPorTipo($matriculaId, 'CERTIFICADO_DISCAPACIDAD');
+    }
+
+    private function archivoPorTipo(int $matriculaId, string $tipo): ?array
     {
         $statement = $this->connection->prepare(
             'SELECT af.ruta, af.mime_type
              FROM archivos_matricula af
              INNER JOIN matriculas m ON m.id = af.matricula_id
              INNER JOIN tipos_archivo ta ON ta.id = af.tipo_archivo_id
-             WHERE af.matricula_id = :matricula AND ta.nombre = "FOTO_CARNET"
+             WHERE af.matricula_id = :matricula AND ta.nombre = :tipo
                AND m.estado <> "ANULADA"
              LIMIT 1'
         );
-        $statement->execute(['matricula' => $matriculaId]);
+        $statement->execute(['matricula' => $matriculaId, 'tipo' => $tipo]);
         $archivo = $statement->fetch();
 
         return $archivo === false ? null : $archivo;
     }
 
-    public function actualizarFicha(int $matriculaId, array $data): void
+    public function actualizarFicha(int $matriculaId, array $data, array $files = []): void
     {
-        foreach (['apellido_paterno', 'apellido_materno', 'nombres', 'numero_documento', 'correo', 'fecha_nacimiento', 'telefono_celular'] as $field) {
+        foreach (['correo', 'telefono_celular'] as $field) {
             if (trim((string) ($data[$field] ?? '')) === '') {
                 throw new InvalidArgumentException('Complete todos los campos obligatorios.');
             }
@@ -246,31 +310,19 @@ final class MatriculaModel
             if ($estudianteId === false) throw new RuntimeException('La ficha no existe.');
 
             $student = $this->connection->prepare(
-                'UPDATE estudiantes SET apellido_paterno = :paterno, apellido_materno = :materno,
-                 nombres = :nombres, tipo_documento = :tipo_documento, numero_documento = :documento,
-                 sexo = :sexo, fecha_nacimiento = :fecha, email = :email, telefono_casa = :casa,
-                 telefono_celular = :celular, departamento_actual = :departamento_actual,
-                 provincia_actual = :provincia_actual, distrito_actual = :distrito_actual,
+                'UPDATE estudiantes SET email = :email, telefono_casa = :casa,
+                 telefono_celular = :celular, distrito_actual = :distrito_actual,
                  direccion_actual = :direccion, pais_nacimiento = :pais_nacimiento,
-                 departamento_nacimiento = :departamento_nacimiento, provincia_nacimiento = :provincia_nacimiento,
-                 distrito_nacimiento = :distrito_nacimiento, anio_concluye_secundaria = :anio,
+                 anio_concluye_secundaria = :anio,
                  institucion_educativa = :institucion, preparacion_anterior = :preparacion,
                  mencion = :mencion WHERE id_estudiante = :estudiante'
             );
             $student->execute([
-                'paterno' => trim((string) $data['apellido_paterno']), 'materno' => trim((string) $data['apellido_materno']),
-                'nombres' => trim((string) $data['nombres']), 'tipo_documento' => $data['tipo_documento'] ?? 'DNI',
-                'documento' => trim((string) $data['numero_documento']), 'sexo' => $data['sexo'] ?? 'MASCULINO',
-                'fecha' => $data['fecha_nacimiento'], 'email' => trim((string) $data['correo']),
+                'email' => trim((string) $data['correo']),
                 'casa' => trim((string) ($data['telefono_casa'] ?? '')) ?: null, 'celular' => trim((string) $data['telefono_celular']),
-                'departamento_actual' => trim((string) ($data['departamento_actual'] ?? '')) ?: null,
-                'provincia_actual' => trim((string) ($data['provincia_actual'] ?? '')) ?: null,
                 'distrito_actual' => trim((string) ($data['distrito_actual'] ?? '')) ?: null,
                 'direccion' => trim((string) ($data['direccion_actual'] ?? '')) ?: null,
                 'pais_nacimiento' => trim((string) ($data['pais_nacimiento'] ?? '')) ?: null,
-                'departamento_nacimiento' => trim((string) ($data['departamento_nacimiento'] ?? '')) ?: null,
-                'provincia_nacimiento' => trim((string) ($data['provincia_nacimiento'] ?? '')) ?: null,
-                'distrito_nacimiento' => trim((string) ($data['distrito_nacimiento'] ?? '')) ?: null,
                 'anio' => ($data['anio_conclusion_secundaria'] ?? '') !== '' ? (int) $data['anio_conclusion_secundaria'] : null,
                 'institucion' => trim((string) ($data['nombre_institucion'] ?? '')) ?: null,
                 'preparacion' => trim((string) ($data['preparacion_anterior'] ?? '')) ?: null,
@@ -278,11 +330,11 @@ final class MatriculaModel
             ]);
 
             $registration = $this->connection->prepare(
-                'UPDATE matriculas SET carrera_id = :carrera, modalidad_clase_id = :modalidad,
+                'UPDATE matriculas SET modalidad_clase_id = :modalidad,
                  condicion_id = :condicion, turno_id = :turno WHERE id = :id'
             );
             $registration->execute([
-                'carrera' => (int) $data['carrera_id'], 'modalidad' => (int) $data['modalidad_clase_id'],
+                'modalidad' => (int) $data['modalidad_clase_id'],
                 'condicion' => (int) $data['condicion_id'], 'turno' => (int) $data['turno_id'], 'id' => $matriculaId,
             ]);
 
@@ -312,6 +364,10 @@ final class MatriculaModel
                 'como_se_entero' => $this->discoverySource($data),
                 'matricula' => $matriculaId,
             ]);
+            if (!empty($data['tiene_discapacidad']) && !empty($data['tiene_certificado_discapacidad'])) {
+                $this->storeCertificate($files, $matriculaId);
+            }
+            $this->storePhoto($files, $matriculaId);
             $this->connection->commit();
         } catch (Throwable $exception) {
             $this->connection->rollBack();
@@ -523,6 +579,106 @@ final class MatriculaModel
             if ($typeId === false) throw new RuntimeException('Tipo de archivo no configurado.');
             $statement = $this->connection->prepare('INSERT INTO archivos_matricula (matricula_id, tipo_archivo_id, nombre_original, ruta, mime_type, tamano_bytes, hash_archivo) VALUES (:matricula, :tipo, :original, :ruta, :mime, :tamano, :hash)');
             $statement->execute(['matricula' => $matriculaId, 'tipo' => $typeId, 'original' => basename((string) $files[$field]['name']), 'ruta' => $storedPath, 'mime' => $mime, 'tamano' => $files[$field]['size'], 'hash' => hash_file('sha256', $storedPath)]);
+        }
+    }
+
+    private function storeCertificate(array $files, int $matriculaId): void
+    {
+        if (($files['certificado_discapacidad']['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+            return;
+        }
+        $file = $files['certificado_discapacidad'];
+        if ($file['error'] !== UPLOAD_ERR_OK || $file['size'] > 5 * 1024 * 1024) {
+            throw new InvalidArgumentException('El certificado debe ser válido y pesar como máximo 5 MB.');
+        }
+        $mime = (new finfo(FILEINFO_MIME_TYPE))->file($file['tmp_name']);
+        $extensions = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'application/pdf' => 'pdf'];
+        if (!isset($extensions[$mime])) {
+            throw new InvalidArgumentException('El formato del certificado no está permitido.');
+        }
+        $directory = __DIR__ . '/../storage/matriculas/';
+        if (!is_dir($directory) && !mkdir($directory, 0700, true) && !is_dir($directory)) {
+            throw new RuntimeException('No se pudo preparar el almacenamiento del certificado.');
+        }
+        $storedPath = $directory . bin2hex(random_bytes(16)) . '.' . $extensions[$mime];
+        if (!move_uploaded_file($file['tmp_name'], $storedPath)) {
+            throw new RuntimeException('No se pudo guardar el certificado.');
+        }
+        $typeStatement = $this->connection->prepare('SELECT id FROM tipos_archivo WHERE nombre = :nombre');
+        $typeStatement->execute(['nombre' => 'CERTIFICADO_DISCAPACIDAD']);
+        $typeId = $typeStatement->fetchColumn();
+        if ($typeId === false) {
+            throw new RuntimeException('Tipo de certificado no configurado.');
+        }
+        $oldStatement = $this->connection->prepare('SELECT ruta FROM archivos_matricula WHERE matricula_id = :matricula AND tipo_archivo_id = :tipo LIMIT 1');
+        $oldStatement->execute(['matricula' => $matriculaId, 'tipo' => $typeId]);
+        $oldPath = $oldStatement->fetchColumn();
+        $statement = $this->connection->prepare(
+            'INSERT INTO archivos_matricula (matricula_id, tipo_archivo_id, nombre_original, ruta, mime_type, tamano_bytes, hash_archivo)
+             VALUES (:matricula, :tipo, :original, :ruta, :mime, :tamano, :hash)
+             ON DUPLICATE KEY UPDATE nombre_original = VALUES(nombre_original), ruta = VALUES(ruta), mime_type = VALUES(mime_type), tamano_bytes = VALUES(tamano_bytes), hash_archivo = VALUES(hash_archivo)'
+        );
+        $statement->execute([
+            'matricula' => $matriculaId,
+            'tipo' => $typeId,
+            'original' => basename((string) $file['name']),
+            'ruta' => $storedPath,
+            'mime' => $mime,
+            'tamano' => $file['size'],
+            'hash' => hash_file('sha256', $storedPath),
+        ]);
+        if (is_string($oldPath) && $oldPath !== $storedPath && is_file($oldPath)) {
+            unlink($oldPath);
+        }
+    }
+
+    private function storePhoto(array $files, int $matriculaId): void
+    {
+        if (($files['foto']['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+            return;
+        }
+        $file = $files['foto'];
+        if ($file['error'] !== UPLOAD_ERR_OK || $file['size'] > 5 * 1024 * 1024) {
+            throw new InvalidArgumentException('La foto debe ser válida y pesar como máximo 5 MB.');
+        }
+        $mime = (new finfo(FILEINFO_MIME_TYPE))->file($file['tmp_name']);
+        $extensions = ['image/jpeg' => 'jpg', 'image/png' => 'png'];
+        if (!isset($extensions[$mime])) {
+            throw new InvalidArgumentException('La foto debe estar en formato JPG o PNG.');
+        }
+        $directory = __DIR__ . '/../storage/matriculas/';
+        if (!is_dir($directory) && !mkdir($directory, 0700, true) && !is_dir($directory)) {
+            throw new RuntimeException('No se pudo preparar el almacenamiento de la foto.');
+        }
+        $storedPath = $directory . bin2hex(random_bytes(16)) . '.' . $extensions[$mime];
+        if (!move_uploaded_file($file['tmp_name'], $storedPath)) {
+            throw new RuntimeException('No se pudo guardar la foto.');
+        }
+        $typeStatement = $this->connection->prepare('SELECT id FROM tipos_archivo WHERE nombre = :nombre');
+        $typeStatement->execute(['nombre' => 'FOTO_CARNET']);
+        $typeId = $typeStatement->fetchColumn();
+        if ($typeId === false) {
+            throw new RuntimeException('Tipo de foto no configurado.');
+        }
+        $oldStatement = $this->connection->prepare('SELECT ruta FROM archivos_matricula WHERE matricula_id = :matricula AND tipo_archivo_id = :tipo LIMIT 1');
+        $oldStatement->execute(['matricula' => $matriculaId, 'tipo' => $typeId]);
+        $oldPath = $oldStatement->fetchColumn();
+        $statement = $this->connection->prepare(
+            'INSERT INTO archivos_matricula (matricula_id, tipo_archivo_id, nombre_original, ruta, mime_type, tamano_bytes, hash_archivo)
+             VALUES (:matricula, :tipo, :original, :ruta, :mime, :tamano, :hash)
+             ON DUPLICATE KEY UPDATE nombre_original = VALUES(nombre_original), ruta = VALUES(ruta), mime_type = VALUES(mime_type), tamano_bytes = VALUES(tamano_bytes), hash_archivo = VALUES(hash_archivo)'
+        );
+        $statement->execute([
+            'matricula' => $matriculaId,
+            'tipo' => $typeId,
+            'original' => basename((string) $file['name']),
+            'ruta' => $storedPath,
+            'mime' => $mime,
+            'tamano' => $file['size'],
+            'hash' => hash_file('sha256', $storedPath),
+        ]);
+        if (is_string($oldPath) && $oldPath !== $storedPath && is_file($oldPath)) {
+            unlink($oldPath);
         }
     }
 

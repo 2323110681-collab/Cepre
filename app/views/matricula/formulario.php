@@ -20,11 +20,12 @@ $usuarioActual = currentUser();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ficha de matrícula | CEPRE UNTELS</title>
+    <link rel="icon" type="image/png" href="/cepre_untels/public/img/cepre.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" href="/cepre_untels/public/css/app.css?v=20260907">
+    <link rel="stylesheet" href="/cepre_untels/public/css/app.css?v=20260909">
 </head>
 <body>
     <?php require __DIR__ . '/../partials/site-header.php'; ?>
@@ -196,6 +197,7 @@ $usuarioActual = currentUser();
             <div class="form-footer"><span>Los campos marcados son obligatorios.</span><div class="form-footer__actions"><button class="button button--clear" type="button" id="clear-form">Limpiar ficha</button><button class="button button--submit" type="submit">Guardar matrícula</button></div></div>
         </form>
     </main>
+    <?php require __DIR__ . '/../partials/site-footer.php'; ?>
     <script src="/cepre_untels/public/js/app.js?v=20260907"></script>
     <?php if ($registroExitoso && $numeroRegistrado !== null): ?>
         <script>

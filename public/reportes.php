@@ -8,6 +8,10 @@ require_once __DIR__ . '/../app/models/MatriculaModel.php';
 requireAuthentication();
 $model = new MatriculaModel();
 $catalogos = $model->catalogos();
+$catalogos['periodos'] = array_values(array_filter(
+  $catalogos['periodos'],
+  static fn (array $periodo): bool => preg_match('/^\d{4}-(?:I|II)$/', (string) $periodo['nombre']) === 1
+));
 
 $positiveInt = static function (mixed $value): ?int {
     $value = filter_var($value, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
@@ -17,6 +21,10 @@ $date = static function (mixed $value): ?string {
     return is_string($value) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $value) ? $value : null;
 };
 $periodoId = $positiveInt($_GET['periodo_id'] ?? null);
+$periodoIds = array_map(static fn (array $periodo): int => (int) $periodo['id'], $catalogos['periodos']);
+if ($periodoId !== null && !in_array($periodoId, $periodoIds, true)) {
+  $periodoId = null;
+}
 $carreraId = $positiveInt($_GET['carrera_id'] ?? null);
 $sectorId = $positiveInt($_GET['sector_id'] ?? null);
 $sexo = in_array($_GET['sexo'] ?? '', ['MASCULINO', 'FEMENINO'], true) ? $_GET['sexo'] : null;
@@ -68,6 +76,7 @@ foreach ($catalogos['periodos'] as $periodo) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard CEPRE - Reportes Estadísticos</title>
+  <link rel="icon" type="image/png" href="/cepre_untels/public/img/cepre.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
@@ -254,5 +263,6 @@ foreach ($catalogos['periodos'] as $periodo) {
     <?php endif; ?>
   </section>
 </main>
+<?php require __DIR__ . '/../app/views/partials/site-footer.php'; ?>
 </body>
 </html>

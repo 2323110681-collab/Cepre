@@ -1,7 +1,6 @@
 <header class="site-header">
     <a class="brand" href="/cepre_untels/public/" aria-label="CEPRE UNTELS inicio">
-        <span class="brand__mark">C</span>
-        <span><strong>CEPRE</strong><b>UNTELS</b></span>
+        <img class="brand__logo" src="/cepre_untels/public/img/cepre.png" alt="CEPRE UNTELS">
     </a>
     <nav aria-label="Navegación principal">
         <span class="user-label"><?= htmlspecialchars(currentUser()['nombre'] ?? 'Usuario', ENT_QUOTES, 'UTF-8') ?></span>

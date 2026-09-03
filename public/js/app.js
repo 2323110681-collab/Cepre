@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!certificateSection || !certificateInput) return;
         certificateSection.hidden = !enabled;
         certificateInput.disabled = !enabled;
-        certificateInput.required = enabled;
+        certificateInput.required = enabled && certificateInput.dataset.hasExisting !== 'true';
         if (!enabled) certificateInput.value = '';
     };
     certificateSelect?.addEventListener('change', toggleCertificate);
@@ -230,7 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const missingFiles = [...form.querySelectorAll('input[type="file"]')]
-            .filter((field) => field.files.length === 0)
+            .filter((field) => field.required && !field.disabled && field.files.length === 0)
             .map((field) => field.id === 'foto' ? 'la foto carnet' : 'la copia del documento');
         if (missingFiles.length > 0) {
             event.preventDefault();
@@ -265,8 +265,15 @@ function resetConditionalFields() {
 }
 
 function showFilePreview(input) {
-    const preview = document.querySelector(input.id === 'foto' ? '.preview--photo' : '.preview--document');
     const file = input.files[0];
+    const editPhotoPreview = input.id === 'foto' ? document.getElementById('edit-photo-preview') : null;
+    if (editPhotoPreview) {
+        if (!file) return;
+        editPhotoPreview.src = URL.createObjectURL(file);
+        editPhotoPreview.hidden = false;
+        return;
+    }
+    const preview = document.querySelector(input.id === 'foto' ? '.preview--photo' : '.preview--document');
     if (!file || !preview) return;
 
     if (file.type.startsWith('image/')) {

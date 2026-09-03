@@ -14,7 +14,6 @@ $matriculaId = filter_var($_GET['matricula_id'] ?? null, FILTER_VALIDATE_INT, ['
 $carreraSeleccionada = $carreraId !== false && $carreraId !== null;
 $estudiantes = $carreraSeleccionada ? $model->listarEstudiantes($carreraId) : [];
 $ficha = $matriculaId === false || $matriculaId === null ? null : $model->fichaEstudiante($matriculaId);
-$actualizado = ($_GET['actualizado'] ?? '') === '1';
 
 function fichaValue(array $ficha, string $key): string
 {
@@ -28,11 +27,12 @@ function fichaValue(array $ficha, string $key): string
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fichas de estudiantes | CEPRE UNTELS</title>
+    <link rel="icon" type="image/png" href="/cepre_untels/public/img/cepre.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" href="/cepre_untels/public/css/app.css?v=20260904">
+    <link rel="stylesheet" href="/cepre_untels/public/css/app.css?v=20260909">
 </head>
 <body>
     <?php require __DIR__ . '/../app/views/partials/site-header.php'; ?>
@@ -97,8 +97,12 @@ function fichaValue(array $ficha, string $key): string
                             <p class="sheet-subtitle"><?= fichaValue($ficha, 'nombre_carrera') ?></p>
                         </div>
                         <div class="sheet-header__actions">
-                            <img class="student-photo" src="/cepre_untels/public/archivo.php?matricula_id=<?= (int) $ficha['matricula_id'] ?>" alt="Foto carnet de <?= fichaValue($ficha, 'nombres') ?>">
+                            <div class="student-photo-frame">
+                                <img class="student-photo" src="/cepre_untels/public/archivo.php?matricula_id=<?= (int) $ficha['matricula_id'] ?>" alt="Foto carnet de <?= fichaValue($ficha, 'nombres') ?>" onerror="this.hidden=true">
+                                <span>Sin foto</span>
+                            </div>
                             <a class="button button--dark" href="/cepre_untels/public/editar.php?matricula_id=<?= (int) $ficha['matricula_id'] ?>">Editar ficha</a>
+                            <button class="button button--gold" type="button" onclick="window.print()">Imprimir ficha</button>
                         </div>
                     </div>
 
@@ -127,7 +131,7 @@ function fichaValue(array $ficha, string $key): string
                             <div><dt>Fecha de registro</dt><dd><?= fichaValue($ficha, 'fecha_registro') ?></dd></div>
                             <div><dt>Departamento actual</dt><dd><?= fichaValue($ficha, 'departamento_actual') ?></dd></div>
                             <div><dt>Provincia actual</dt><dd><?= fichaValue($ficha, 'provincia_actual') ?></dd></div>
-                            <div><dt>Distrito actual</dt><dd><?= fichaValue($ficha, 'distrito_actual') ?></dd></div>
+                            <div><dt>Distrito actual</dt><dd><?= fichaValue($ficha, 'distrito_actual_nombre') ?></dd></div>
                             <div class="detail-grid__wide"><dt>Dirección actual</dt><dd><?= fichaValue($ficha, 'direccion_actual') ?></dd></div>
                         </dl>
                     </div>
@@ -138,7 +142,7 @@ function fichaValue(array $ficha, string $key): string
                             <div><dt>País de nacimiento</dt><dd><?= fichaValue($ficha, 'pais_nacimiento') ?></dd></div>
                             <div><dt>Departamento / estado</dt><dd><?= fichaValue($ficha, 'departamento_nacimiento') ?></dd></div>
                             <div><dt>Provincia</dt><dd><?= fichaValue($ficha, 'provincia_nacimiento') ?></dd></div>
-                            <div><dt>Distrito / ciudad</dt><dd><?= fichaValue($ficha, 'distrito_nacimiento') ?></dd></div>
+                            <div><dt>Distrito / ciudad</dt><dd><?= fichaValue($ficha, 'distrito_nacimiento_nombre') ?></dd></div>
                             <div><dt>Año de secundaria</dt><dd><?= fichaValue($ficha, 'anio_conclusion_secundaria') ?></dd></div>
                             <div><dt>País de estudios</dt><dd><?= fichaValue($ficha, 'pais_estudios') ?></dd></div>
                             <div><dt>Sector</dt><dd><?= fichaValue($ficha, 'sector_nombre') ?></dd></div>
@@ -151,6 +155,7 @@ function fichaValue(array $ficha, string $key): string
                             <div><dt>Tipo de discapacidad</dt><dd><?= fichaValue($ficha, 'tipo_discapacidad') !== 'No registrado' ? fichaValue($ficha, 'tipo_discapacidad') : fichaValue($ficha, 'otro_tipo_discapacidad') ?></dd></div>
                             <div><dt>Grado de discapacidad</dt><dd><?= fichaValue($ficha, 'grado_discapacidad') ?></dd></div>
                             <div><dt>Certificado de discapacidad</dt><dd><?= (int) ($ficha['tiene_certificado_discapacidad'] ?? 0) === 1 ? 'Sí' : 'No' ?></dd></div>
+                            <div><dt>Documento de certificado</dt><dd><?php if (!empty($ficha['certificado_ruta'])): ?><a class="button button--gold" href="/cepre_untels/public/archivo.php?matricula_id=<?= (int) $ficha['matricula_id'] ?>&tipo=certificado" target="_blank" rel="noopener">Ver certificado</a><?php else: ?>Sin certificado adjunto<?php endif; ?></dd></div>
                             <div class="detail-grid__wide"><dt>Necesidades especiales o adecuaciones</dt><dd><?= fichaValue($ficha, 'necesidades_especiales') ?></dd></div>
                             <div><dt>¿Cómo se enteró de la CEPRE UNTELS?</dt><dd><?= fichaValue($ficha, 'como_se_entero_cepre') ?></dd></div>
                         </dl>
@@ -162,6 +167,7 @@ function fichaValue(array $ficha, string $key): string
         </section>
         <?php endif; ?>
     </main>
+    <?php require __DIR__ . '/../app/views/partials/site-footer.php'; ?>
     <script>
         const searchInput = document.getElementById('buscar-estudiante');
         searchInput?.addEventListener('input', () => {
@@ -170,14 +176,6 @@ function fichaValue(array $ficha, string $key): string
                 row.hidden = search !== '' && !row.textContent.toLocaleLowerCase().includes(search);
             });
         });
-        <?php if ($actualizado): ?>
-        Swal.fire({
-            title: 'Cambios guardados',
-            text: 'La ficha del estudiante se actualizó correctamente.',
-            icon: 'success',
-            confirmButtonColor: '#23313b'
-        });
-        <?php endif; ?>
     </script>
 </body>
 </html>
