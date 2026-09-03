@@ -14,40 +14,39 @@ if ($parent === '') {
     exit;
 }
 
-$baseUrl = 'https://raw.githubusercontent.com/joseluisq/ubigeos-peru/master/json/';
-$departments = json_decode((string) file_get_contents($baseUrl . 'departamentos.json'), true);
-$provinces = json_decode((string) file_get_contents($baseUrl . 'provincias.json'), true);
-$districts = json_decode((string) file_get_contents($baseUrl . 'distritos.json'), true);
+$basePath = __DIR__ . '/../../app/data/ubigeos/';
+$departments = json_decode((string) file_get_contents($basePath . 'departamentos.json'), true);
+$provinces = json_decode((string) file_get_contents($basePath . 'provincias.json'), true);
+$districts = json_decode((string) file_get_contents($basePath . 'distritos.json'), true);
 $departments = is_array($departments) ? $departments : [];
 $provinces = is_array($provinces) ? $provinces : [];
 $districts = is_array($districts) ? $districts : [];
 
-$parentDepartment = null;
+$locations = [];
+$parentId = null;
 foreach ($departments as $department) {
     if (($department['codigo_ubigeo'] ?? '') === $parent) {
-        $parentDepartment = $department;
+        $parentId = (string) ($department['id_ubigeo'] ?? '');
         break;
     }
 }
 
-$locations = [];
-if ($parentDepartment !== null) {
-    foreach ($provinces as $province) {
-        if (($province['id_padre_ubigeo'] ?? '') === ($parentDepartment['id_ubigeo'] ?? '')) {
-            $locations[] = ['codigo' => $province['id_ubigeo'], 'nombre' => $province['nombre_ubigeo']];
-        }
-    }
+if ($parentId !== null) {
+    $locations = array_map(
+        static fn (array $location): array => [
+            'codigo' => $location['id_ubigeo'],
+            'nombre' => $location['nombre_ubigeo'],
+        ],
+        $provinces[$parentId] ?? []
+    );
 } else {
-    foreach ($provinces as $province) {
-        if (($province['id_ubigeo'] ?? '') === $parent) {
-            foreach ($districts as $district) {
-                if (($district['id_padre_ubigeo'] ?? '') === $parent) {
-                    $locations[] = ['codigo' => $district['id_ubigeo'], 'nombre' => $district['nombre_ubigeo']];
-                }
-            }
-            break;
-        }
-    }
+    $locations = array_map(
+        static fn (array $location): array => [
+            'codigo' => $location['id_ubigeo'],
+            'nombre' => $location['nombre_ubigeo'],
+        ],
+        $districts[$parent] ?? []
+    );
 }
 
 if ($locations === []) {

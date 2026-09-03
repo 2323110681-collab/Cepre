@@ -5,7 +5,28 @@ declare(strict_types=1);
 function startSession(): void
 {
     if (session_status() !== PHP_SESSION_ACTIVE) {
+        session_set_cookie_params([
+            'httponly' => true,
+            'secure' => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
+            'samesite' => 'Lax',
+        ]);
         session_start();
+    }
+}
+
+function csrfToken(): string
+{
+    startSession();
+    $_SESSION['csrf_token'] ??= bin2hex(random_bytes(32));
+    return $_SESSION['csrf_token'];
+}
+
+function verifyCsrfToken(?string $token): void
+{
+    startSession();
+    if (!$token || !hash_equals((string) ($_SESSION['csrf_token'] ?? ''), $token)) {
+        http_response_code(419);
+        exit('Solicitud no válida.');
     }
 }
 

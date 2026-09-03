@@ -23,7 +23,7 @@ $usuarioActual = currentUser();
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" href="/cepre_untels/public/css/app.css">
+    <link rel="stylesheet" href="/cepre_untels/public/css/app.css?v=20260903">
 </head>
 <body>
     <header class="site-header">
@@ -31,11 +31,7 @@ $usuarioActual = currentUser();
             <span class="brand__mark">C</span>
             <span><strong>CEPRE</strong><b>UNTELS</b></span>
         </a>
-        <nav aria-label="Navegación principal">
-            <a href="#ficha">Inicio</a>
-            <a href="#datos-personales">Sobre nosotros</a>
-            <a href="#academica">Docentes</a>
-            <a href="#academica">Páginas⌄</a>
+        <nav aria-label="Navegación principal">          
             <span class="user-label"><?= htmlspecialchars($usuarioActual['nombre'] ?? 'Usuario') ?></span>
             <a href="/cepre_untels/public/logout.php">Salir</a>
         </nav>
@@ -54,8 +50,24 @@ $usuarioActual = currentUser();
         <?php endif; ?>
 
         <form class="enrollment-form" method="post" enctype="multipart/form-data" action="#">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(csrfToken(), ENT_QUOTES, 'UTF-8') ?>">
             <section class="top-grid" aria-label="Datos de matrícula">
                 <div class="panel panel--compact">
+                    <div class="field">
+                        <label for="codigo-cepre">Código CEPRE asignado</label>
+                        <input id="codigo-cepre" type="text" value="<?= htmlspecialchars($codigoCepre ?? $numeroMatricula, ENT_QUOTES, 'UTF-8') ?>" readonly>
+                    </div>
+                    <div class="field">
+                        <label for="semestre">Semestre</label>
+                        <select id="semestre" name="semestre" required>
+                            <option value="01">I</option>
+                            <option value="11">II</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="codigo-alumno">Código de alumno</label>
+                        <input id="codigo-alumno" type="text" value="Se generará al completar" readonly>
+                    </div>
                     <div class="field">
                         <label for="condicion">Condición</label>
                         <select id="condicion" name="condicion_id">
@@ -66,18 +78,26 @@ $usuarioActual = currentUser();
                     </div>
                     <div class="upload-row">
                         <label for="foto">Foto Carnet</label>
-                        <input id="foto" name="foto" type="file" accept="image/jpeg,image/png">
+                        <input id="foto" name="foto" type="file" accept="image/jpeg,image/png" required>
                         <span class="file-button">Subir foto</span>
                     </div>
                     <div class="upload-row">
                         <label for="documento">Copia de Documento</label>
-                        <input id="documento" name="documento" type="file" accept="image/jpeg,image/png,application/pdf">
+                        <input id="documento" name="documento" type="file" accept="image/jpeg,image/png,application/pdf" required>
                         <span class="file-button">Subir DNI</span>
                     </div>
                     <p class="hint">Foto del rostro con fondo blanco.<br>Escaneo o foto del DNI por ambos caras.<br>Formatos permitidos: JPG, PNG o PDF.</p>
                 </div>
 
                 <div class="panel panel--compact">
+                    <div class="field">
+                        <label for="modalidad-clase">Modalidad de clase</label>
+                        <select id="modalidad-clase" name="modalidad_clase_id" required>
+                            <?php foreach ($catalogos['modalidades'] as $item): ?>
+                                <option value="<?= (int) $item['id'] ?>"><?= htmlspecialchars($item['nombre']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
                     <div class="field">
                         <label for="turno">Turno</label>
                         <select id="turno" name="turno_id">
@@ -127,10 +147,10 @@ $usuarioActual = currentUser();
             <section class="section-block">
                 <h2>Lugar de nacimiento</h2>
                 <div class="form-grid form-grid--four">
-                    <div class="field"><label for="pais">País</label><select id="pais" name="pais_nacimiento"><option>Perú</option><option>Otro</option></select></div>
-                    <div class="field"><label for="departamento-nacimiento">Departamento</label><select id="departamento-nacimiento" name="departamento_nacimiento" data-location="departamento"><option value="">Seleccione departamento</option><?php foreach ($catalogos['departamentos'] as $item): ?><option value="<?= htmlspecialchars($item['codigo']) ?>"><?= htmlspecialchars($item['nombre']) ?></option><?php endforeach; ?></select></div>
-                    <div class="field"><label for="provincia-nacimiento">Provincia</label><select id="provincia-nacimiento" name="provincia_nacimiento" data-location="provincia" disabled><option value="">Seleccione provincia</option></select></div>
-                    <div class="field"><label for="distrito-nacimiento">Distrito</label><select id="distrito-nacimiento" name="distrito_nacimiento" data-location="distrito" disabled><option value="">Seleccione distrito</option></select></div>
+                    <div class="field"><label for="pais">País</label><select id="pais" name="pais_nacimiento"><option value="Perú">Perú</option><option value="Otro">Otro</option></select><input id="pais-extranjero" name="pais_nacimiento_otro" type="text" placeholder="Escriba el país" hidden disabled></div>
+                    <div class="field"><label for="departamento-nacimiento">Departamento / estado</label><select id="departamento-nacimiento" name="departamento_nacimiento" data-location="departamento" data-peru-location><option value="">Seleccione departamento</option><?php foreach ($catalogos['departamentos'] as $item): ?><option value="<?= htmlspecialchars($item['codigo']) ?>"><?= htmlspecialchars($item['nombre']) ?></option><?php endforeach; ?></select><input id="departamento-nacimiento-extranjero" name="departamento_nacimiento" type="text" placeholder="Escriba departamento o estado" hidden disabled></div>
+                    <div class="field"><label for="provincia-nacimiento">Provincia</label><select id="provincia-nacimiento" name="provincia_nacimiento" data-location="provincia" data-peru-location disabled><option value="">Seleccione provincia</option></select><input id="provincia-nacimiento-extranjero" name="provincia_nacimiento" type="text" placeholder="Escriba provincia" hidden disabled></div>
+                    <div class="field"><label for="distrito-nacimiento">Distrito / ciudad</label><select id="distrito-nacimiento" name="distrito_nacimiento" data-location="distrito" data-peru-location disabled><option value="">Seleccione distrito</option></select><input id="distrito-nacimiento-extranjero" name="distrito_nacimiento" type="text" placeholder="Escriba distrito o ciudad" hidden disabled></div>
                 </div>
             </section>
 
@@ -157,7 +177,7 @@ $usuarioActual = currentUser();
     </main>
     <script src="/cepre_untels/public/js/app.js"></script>
     <?php if ($registroExitoso && $numeroRegistrado !== null): ?>
-        <script>Swal.fire({ title: '¡Registro correcto!', text: 'La matrícula N.° <?= htmlspecialchars($numeroRegistrado, ENT_QUOTES, 'UTF-8') ?> fue guardada en la base de datos.', icon: 'success', confirmButtonColor: '#23313b' });</script>
+        <script>Swal.fire({ title: '¡Registro correcto!', text: 'El código de alumno <?= htmlspecialchars($numeroRegistrado, ENT_QUOTES, 'UTF-8') ?> fue guardado en la base de datos.', icon: 'success', confirmButtonColor: '#23313b' });</script>
     <?php endif; ?>
 </body>
 </html>

@@ -34,6 +34,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    const birthCountry = document.getElementById('pais');
+    birthCountry?.addEventListener('change', () => {
+        toggleBirthplaceFields(birthCountry.value);
+        toggleForeignCountry(birthCountry.value);
+    });
+    if (birthCountry) toggleBirthplaceFields(birthCountry.value);
+    if (birthCountry) toggleForeignCountry(birthCountry.value);
+
+    document.querySelectorAll('#semestre').forEach((field) => {
+        field.addEventListener('change', updateStudentCode);
+    });
+    updateStudentCode();
+
     document.getElementById('clear-form')?.addEventListener('click', () => {
         Swal.fire({
             title: '¿Está seguro?',
@@ -85,12 +98,20 @@ function showFilePreview(input) {
     const file = input.files[0];
     if (!file || !preview) return;
 
-    if (input.id === 'foto' && file.type.startsWith('image/')) {
+    if (file.type.startsWith('image/')) {
         const image = document.createElement('img');
         image.src = URL.createObjectURL(file);
-        image.alt = 'Vista previa de la foto carnet';
+        image.alt = input.id === 'foto' ? 'Vista previa de la foto carnet' : 'Vista previa del documento';
         image.onload = () => URL.revokeObjectURL(image.src);
         preview.replaceChildren(image);
+        return;
+    }
+
+    if (file.type === 'application/pdf') {
+        const documentPreview = document.createElement('iframe');
+        documentPreview.src = URL.createObjectURL(file);
+        documentPreview.title = 'Vista previa del documento PDF';
+        preview.replaceChildren(documentPreview);
         return;
     }
 
@@ -121,12 +142,49 @@ function setLocationName(select) {
     hidden.value = select.selectedOptions[0]?.textContent || '';
 }
 
+function toggleBirthplaceFields(country) {
+    const usePeruLocations = country === 'Perú';
+    document.querySelectorAll('[data-peru-location]').forEach((select) => {
+        const foreignInput = document.getElementById(`${select.id}-extranjero`);
+        select.hidden = !usePeruLocations;
+        select.disabled = !usePeruLocations || (select.dataset.location !== 'departamento' && !select.value);
+        if (!foreignInput) return;
+        foreignInput.hidden = usePeruLocations;
+        foreignInput.disabled = usePeruLocations;
+    });
+
+    if (!usePeruLocations) {
+        document.querySelectorAll('[name$="_nombre"]').forEach((field) => field.remove());
+    }
+}
+
+function toggleForeignCountry(country) {
+    const countryInput = document.getElementById('pais-extranjero');
+    if (!countryInput) return;
+    const isForeign = country === 'Otro';
+    countryInput.hidden = !isForeign;
+    countryInput.disabled = !isForeign;
+    countryInput.required = isForeign;
+}
+
+function updateStudentCode() {
+    const codeInput = document.getElementById('codigo-cepre');
+    const semesterInput = document.getElementById('semestre');
+    const studentCode = document.getElementById('codigo-alumno');
+    if (!codeInput || !semesterInput || !studentCode) return;
+
+    const code = codeInput.value;
+    const year = String(new Date().getFullYear()).slice(-2);
+    studentCode.value = code.length === 5
+        ? `${year}${semesterInput.value}${code}`
+        : 'Se generará al completar';
+}
+
 async function loadLocations(parentCode, select) {
     try {
         const response = await fetch(`/cepre_untels/public/api/ubigeos.php?padre=${encodeURIComponent(parentCode)}`);
         if (!response.ok) throw new Error('No se pudo cargar la ubicación.');
-        let locations = await response.json();
-        if (locations.length === 0) locations = await loadExternalLocations(parentCode);
+        const locations = await response.json();
         locations.forEach((location) => select.add(new Option(location.nombre, location.codigo)));
         select.disabled = locations.length === 0;
     } catch (error) {
@@ -134,14 +192,3 @@ async function loadLocations(parentCode, select) {
     }
 }
 
-async function loadExternalLocations(parentCode) {
-    const baseUrl = 'https://raw.githubusercontent.com/joseluisq/ubigeos-peru/master/json/';
-    const [departments, provinces, districts] = await Promise.all([
-        fetch(`${baseUrl}departamentos.json`).then((response) => response.json()),
-        fetch(`${baseUrl}provincias.json`).then((response) => response.json()),
-        fetch(`${baseUrl}distritos.json`).then((response) => response.json())
-    ]);
-    const department = departments.find((item) => item.codigo_ubigeo === parentCode);
-    if (department) return (provinces[department.id_ubigeo] || []).map((item) => ({ codigo: item.id_ubigeo, nombre: item.nombre_ubigeo }));
-    return (districts[parentCode] || []).map((item) => ({ codigo: item.id_ubigeo, nombre: item.nombre_ubigeo }));
-}
