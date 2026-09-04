@@ -228,6 +228,7 @@ final class MatriculaModel
                     s.nombre AS sector_nombre, ia.especificar_sector,
                     ia.nombre_institucion, ia.nombre_institucion_extranjera,
                     pp.nombre AS preparacion_nombre, ia.mencion AS mencion_academica,
+                    ia.departamento_extranjero, ia.provincia_extranjera, ia.distrito_extranjero,
                     ia.tiene_discapacidad, ia.tipo_discapacidad, ia.otro_tipo_discapacidad,
                     ia.grado_discapacidad, ia.necesidades_especiales,
                     ia.tiene_certificado_discapacidad, ia.como_se_entero_cepre,
@@ -394,7 +395,7 @@ final class MatriculaModel
                 'INSERT INTO estudiantes (
                     numero_matricula, codigo_estudiante, apellido_paterno, apellido_materno, nombres,
                     tipo_documento, numero_documento, sexo, fecha_nacimiento, email,
-                    telefono_casa, telefono_celular, departamento_actual, provincia_actual,
+                    telefono_casa, telefono_celular, pais_actual, departamento_actual, provincia_actual,
                     distrito_actual, direccion_actual, pais_nacimiento, departamento_nacimiento,
                     provincia_nacimiento, distrito_nacimiento, anio_concluye_secundaria,
                     institucion_educativa, preparacion_anterior, mencion, carrera_postula,
@@ -402,7 +403,7 @@ final class MatriculaModel
                 ) VALUES (
                     :numero, :codigo_estudiante, :apellido_paterno, :apellido_materno, :nombres,
                     :tipo_documento, :numero_documento, :sexo, :fecha_nacimiento, :email,
-                    :telefono_casa, :telefono_celular, :departamento_actual, :provincia_actual,
+                    :telefono_casa, :telefono_celular, :pais_actual, :departamento_actual, :provincia_actual,
                     :distrito_actual, :direccion_actual, :pais_nacimiento, :departamento_nacimiento,
                     :provincia_nacimiento, :distrito_nacimiento, :anio_concluye_secundaria,
                     :institucion_educativa, :preparacion_anterior, :mencion, :carrera_postula,
@@ -422,6 +423,7 @@ final class MatriculaModel
                 'email' => trim((string) ($data['correo'] ?? '')),
                 'telefono_casa' => trim((string) ($data['telefono_casa'] ?? '')) ?: null,
                 'telefono_celular' => trim((string) ($data['telefono_celular'] ?? '')),
+                'pais_actual' => trim((string) (($data['pais_actual'] ?? 'Perú') === 'Otro' ? ($data['pais_actual_otro'] ?? '') : ($data['pais_actual'] ?? 'Perú'))) ?: null,
                 'departamento_actual' => trim((string) ($data['departamento_actual_nombre'] ?? $data['departamento_actual'] ?? '')) ?: null,
                 'provincia_actual' => trim((string) ($data['provincia_actual_nombre'] ?? $data['provincia_actual'] ?? '')) ?: null,
                 'distrito_actual' => trim((string) ($data['distrito_actual_nombre'] ?? $data['distrito_actual'] ?? '')) ?: null,
@@ -468,13 +470,14 @@ final class MatriculaModel
                     especificar_sector, nombre_institucion, nombre_institucion_extranjera,
                     preparacion_previa_id, mencion, tiene_discapacidad, tipo_discapacidad,
                     otro_tipo_discapacidad, grado_discapacidad, necesidades_especiales,
-                    tiene_certificado_discapacidad, como_se_entero_cepre
-                ) VALUES (:matricula, :anio, :pais, :departamento, :provincia, :distrito, :sector, :especificar, :institucion, :institucion_extranjera, :preparacion, :mencion, :discapacidad, :tipo_discapacidad, :otro_tipo_discapacidad, :grado_discapacidad, :necesidades_especiales, :tiene_certificado, :como_se_entero)'
+                    tiene_certificado_discapacidad, como_se_entero_cepre,
+                    departamento_extranjero, provincia_extranjera, distrito_extranjero
+                ) VALUES (:matricula, :anio, :pais, :departamento, :provincia, :distrito, :sector, :especificar, :institucion, :institucion_extranjera, :preparacion, :mencion, :discapacidad, :tipo_discapacidad, :otro_tipo_discapacidad, :grado_discapacidad, :necesidades_especiales, :tiene_certificado, :como_se_entero, :departamento_extranjero, :provincia_extranjera, :distrito_extranjero)'
             );
             $academicStatement->execute([
                 'matricula' => $matriculaId,
                 'anio' => (int) ($data['anio_conclusion_secundaria'] ?: date('Y')),
-                'pais' => trim((string) ($data['pais_estudios'] ?? 'Perú')),
+                'pais' => trim((string) (($data['pais_estudios'] ?? 'Perú') === 'Otro' ? ($data['pais_estudios_otro'] ?? '') : ($data['pais_estudios'] ?? 'Perú'))),
                 'departamento' => $this->ubigeoOrNull($data['departamento_estudios'] ?? ''),
                 'provincia' => $this->ubigeoOrNull($data['provincia_estudios'] ?? ''),
                 'distrito' => $this->ubigeoOrNull($data['distrito_estudios'] ?? ''),
@@ -491,6 +494,9 @@ final class MatriculaModel
                 'necesidades_especiales' => trim((string) ($data['necesidades_especiales'] ?? '')) ?: null,
                 'tiene_certificado' => !empty($data['tiene_certificado_discapacidad']) ? 1 : 0,
                 'como_se_entero' => $this->discoverySource($data),
+                'departamento_extranjero' => trim((string) ($data['departamento_estudios_extranjero'] ?? '')) ?: null,
+                'provincia_extranjera' => trim((string) ($data['provincia_estudios_extranjera'] ?? '')) ?: null,
+                'distrito_extranjero' => trim((string) ($data['distrito_estudios_extranjero'] ?? '')) ?: null,
             ]);
 
             $this->storeFiles($files, $matriculaId, !empty($data['tiene_certificado_discapacidad']));

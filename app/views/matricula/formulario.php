@@ -132,9 +132,13 @@ $usuarioActual = currentUser();
             <section class="section-block">
                 <h2>Lugar de domicilio actual</h2>
                 <div class="form-grid form-grid--three">
+                    <div class="field"><label for="pais-actual">País</label><select id="pais-actual" name="pais_actual"><option value="Perú">Perú</option><option value="Otro">Otro</option></select></div>
+                    <div class="field" id="pais-actual-extranjero-wrap" hidden><label for="pais-actual-extranjero">País extranjero</label><select id="pais-actual-extranjero" name="pais_actual_otro" disabled><option value="">Seleccione país</option></select></div>
                     <div class="field"><label for="departamento-actual">Departamento</label><select id="departamento-actual" name="departamento_actual" data-location="departamento"><option value="">Seleccione departamento</option><?php foreach ($catalogos['departamentos'] as $item): ?><option value="<?= htmlspecialchars($item['codigo']) ?>"><?= htmlspecialchars($item['nombre']) ?></option><?php endforeach; ?></select></div>
                     <div class="field"><label for="provincia-actual">Provincia</label><select id="provincia-actual" name="provincia_actual" data-location="provincia" disabled><option value="">Seleccione provincia</option></select></div>
                     <div class="field"><label for="distrito-actual">Distrito</label><select id="distrito-actual" name="distrito_actual" data-location="distrito" disabled><option value="">Seleccione distrito</option></select></div>
+                    <div class="field" id="estado-actual-extranjero-wrap" hidden><label for="estado-actual-extranjero">Estado / región</label><select id="estado-actual-extranjero" name="departamento_actual_nombre" disabled><option value="">Seleccione estado o región</option></select></div>
+                    <div class="field" id="ciudad-actual-extranjero-wrap" hidden><label for="ciudad-actual-extranjero">Ciudad / municipio</label><select id="ciudad-actual-extranjero" name="distrito_actual_nombre" disabled><option value="">Seleccione ciudad o municipio</option></select></div>
                     <div class="field field--span-3"><label for="direccion-actual">Dirección actual</label><input id="direccion-actual" name="direccion_actual" type="text"></div>
                 </div>
             </section>
@@ -142,10 +146,13 @@ $usuarioActual = currentUser();
             <section class="section-block">
                 <h2>Lugar de nacimiento</h2>
                 <div class="form-grid form-grid--four">
-                    <div class="field"><label for="pais">País</label><select id="pais" name="pais_nacimiento"><option value="Perú">Perú</option><option value="Otro">Otro</option></select><input id="pais-extranjero" name="pais_nacimiento_otro" type="text" placeholder="Escriba el país" hidden disabled></div>
-                    <div class="field"><label for="departamento-nacimiento">Departamento / estado</label><select id="departamento-nacimiento" name="departamento_nacimiento" data-location="departamento" data-peru-location><option value="">Seleccione departamento</option><?php foreach ($catalogos['departamentos'] as $item): ?><option value="<?= htmlspecialchars($item['codigo']) ?>"><?= htmlspecialchars($item['nombre']) ?></option><?php endforeach; ?></select><input id="departamento-nacimiento-extranjero" name="departamento_nacimiento" type="text" placeholder="Escriba departamento o estado" hidden disabled></div>
-                    <div class="field"><label for="provincia-nacimiento">Provincia</label><select id="provincia-nacimiento" name="provincia_nacimiento" data-location="provincia" data-peru-location disabled><option value="">Seleccione provincia</option></select><input id="provincia-nacimiento-extranjero" name="provincia_nacimiento" type="text" placeholder="Escriba provincia" hidden disabled></div>
-                    <div class="field"><label for="distrito-nacimiento">Distrito / ciudad</label><select id="distrito-nacimiento" name="distrito_nacimiento" data-location="distrito" data-peru-location disabled><option value="">Seleccione distrito</option></select><input id="distrito-nacimiento-extranjero" name="distrito_nacimiento" type="text" placeholder="Escriba distrito o ciudad" hidden disabled></div>
+                    <div class="field"><label for="pais">País</label><select id="pais" name="pais_nacimiento"><option value="Perú">Perú</option><option value="Otro">Otro</option></select></div>
+                    <div class="field" id="pais-nacimiento-extranjero-wrap" hidden><label for="pais-nacimiento-extranjero">País extranjero</label><select id="pais-nacimiento-extranjero" name="pais_nacimiento_otro" disabled><option value="">Seleccione país</option></select></div>
+                    <div class="field" id="departamento-nacimiento-wrap"><label for="departamento-nacimiento">Departamento</label><select id="departamento-nacimiento" name="departamento_nacimiento" data-location="departamento"><option value="">Seleccione departamento</option><?php foreach ($catalogos['departamentos'] as $item): ?><option value="<?= htmlspecialchars($item['codigo']) ?>"><?= htmlspecialchars($item['nombre']) ?></option><?php endforeach; ?></select></div>
+                    <div class="field" id="provincia-nacimiento-wrap"><label for="provincia-nacimiento">Provincia</label><select id="provincia-nacimiento" name="provincia_nacimiento" data-location="provincia" disabled><option value="">Seleccione provincia</option></select></div>
+                    <div class="field" id="distrito-nacimiento-wrap"><label for="distrito-nacimiento">Distrito</label><select id="distrito-nacimiento" name="distrito_nacimiento" data-location="distrito" disabled><option value="">Seleccione distrito</option></select></div>
+                    <div class="field" id="estado-nacimiento-extranjero-wrap" hidden><label for="estado-nacimiento-extranjero">Estado / región</label><select id="estado-nacimiento-extranjero" name="departamento_nacimiento_nombre" disabled><option value="">Seleccione estado o región</option></select></div>
+                    <div class="field" id="ciudad-nacimiento-extranjero-wrap" hidden><label for="ciudad-nacimiento-extranjero">Ciudad / municipio</label><select id="ciudad-nacimiento-extranjero" name="distrito_nacimiento_nombre" disabled><option value="">Seleccione ciudad o municipio</option></select></div>
                 </div>
             </section>
 
@@ -154,9 +161,12 @@ $usuarioActual = currentUser();
                 <div class="form-grid form-grid--four">
                     <div class="field" data-academic-adult><label for="anio">Año concluyó secundaria</label><input id="anio" name="anio_conclusion_secundaria" type="number" min="1950" max="2100"></div>
                     <div class="field" data-academic-adult><label for="pais-estudios">País</label><select id="pais-estudios" name="pais_estudios"><option value="Perú">Perú</option><option value="Otro">Otro</option></select></div>
+                    <div class="field" id="pais-estudios-extranjero-wrap" hidden data-academic-adult><label for="pais-estudios-extranjero">País extranjero</label><select id="pais-estudios-extranjero" name="pais_estudios_otro" disabled><option value="">Seleccione país</option></select></div>
                     <div class="field" data-academic-adult><label for="departamento-estudios">Departamento</label><select id="departamento-estudios" name="departamento_estudios" data-location="departamento"><option value="">Seleccione departamento</option><?php foreach ($catalogos['departamentos'] as $item): ?><option value="<?= htmlspecialchars($item['codigo']) ?>"><?= htmlspecialchars($item['nombre']) ?></option><?php endforeach; ?></select></div>
                     <div class="field" data-academic-adult><label for="provincia-estudios">Provincia</label><select id="provincia-estudios" name="provincia_estudios" data-location="provincia" disabled><option value="">Seleccione provincia</option></select></div>
                     <div class="field" data-academic-adult><label for="distrito-estudios">Distrito</label><select id="distrito-estudios" name="distrito_estudios" data-location="distrito" disabled><option value="">Seleccione distrito</option></select></div>
+                    <div class="field" id="estado-estudios-extranjero-wrap" hidden data-academic-adult><label for="estado-estudios-extranjero">Estado / región</label><select id="estado-estudios-extranjero" name="departamento_estudios_extranjero" disabled><option value="">Seleccione estado o región</option></select></div>
+                    <div class="field" id="ciudad-estudios-extranjero-wrap" hidden data-academic-adult><label for="ciudad-estudios-extranjero">Ciudad / municipio</label><select id="ciudad-estudios-extranjero" name="distrito_estudios_extranjero" disabled><option value="">Seleccione ciudad o municipio</option></select></div>
                     <div class="field" data-academic-adult><label for="sector">Sector</label><select id="sector" name="sector_id"><?php foreach ($catalogos['sectores'] as $item): ?><option value="<?= (int) $item['id'] ?>"><?= htmlspecialchars($item['nombre']) ?></option><?php endforeach; ?></select></div>
                     <div class="field field--span-2" data-academic-adult><label for="especificar-sector">Especificar sector</label><input id="especificar-sector" name="especificar_sector" type="text"></div>
                     <div class="field field--span-2"><label for="institucion">Colegio donde estudia</label><input id="institucion" name="nombre_institucion" type="text"></div>
@@ -198,7 +208,7 @@ $usuarioActual = currentUser();
         </form>
     </main>
     <?php require __DIR__ . '/../partials/site-footer.php'; ?>
-    <script src="/cepre_untels/public/js/app.js?v=20260907"></script>
+    <script src="/cepre_untels/public/js/app.js?v=20260912"></script>
     <?php if ($registroExitoso && $numeroRegistrado !== null): ?>
         <script>
             window.history.replaceState({}, document.title, window.location.pathname);

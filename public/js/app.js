@@ -71,13 +71,36 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    const birthCountry = document.getElementById('pais');
-    birthCountry?.addEventListener('change', () => {
-        toggleBirthplaceFields(birthCountry.value);
-        toggleForeignCountry(birthCountry.value);
+    setupForeignLocationSet({
+        countryId: 'pais-actual',
+        foreignCountryId: 'pais-actual-extranjero',
+        stateId: 'estado-actual-extranjero',
+        cityId: 'ciudad-actual-extranjero',
+        countryWrapId: 'pais-actual-extranjero-wrap',
+        stateWrapId: 'estado-actual-extranjero-wrap',
+        cityWrapId: 'ciudad-actual-extranjero-wrap',
+        peruIds: ['departamento-actual', 'provincia-actual', 'distrito-actual']
     });
-    if (birthCountry) toggleBirthplaceFields(birthCountry.value);
-    if (birthCountry) toggleForeignCountry(birthCountry.value);
+    setupForeignLocationSet({
+        countryId: 'pais-estudios',
+        foreignCountryId: 'pais-estudios-extranjero',
+        stateId: 'estado-estudios-extranjero',
+        cityId: 'ciudad-estudios-extranjero',
+        countryWrapId: 'pais-estudios-extranjero-wrap',
+        stateWrapId: 'estado-estudios-extranjero-wrap',
+        cityWrapId: 'ciudad-estudios-extranjero-wrap',
+        peruIds: ['departamento-estudios', 'provincia-estudios', 'distrito-estudios']
+    });
+    setupForeignLocationSet({
+        countryId: 'pais',
+        foreignCountryId: 'pais-nacimiento-extranjero',
+        stateId: 'estado-nacimiento-extranjero',
+        cityId: 'ciudad-nacimiento-extranjero',
+        countryWrapId: 'pais-nacimiento-extranjero-wrap',
+        stateWrapId: 'estado-nacimiento-extranjero-wrap',
+        cityWrapId: 'ciudad-nacimiento-extranjero-wrap',
+        peruIds: ['departamento-nacimiento', 'provincia-nacimiento', 'distrito-nacimiento']
+    });
 
     const disabilitySelect = document.getElementById('discapacidad');
     const disabilitySection = document.getElementById('seccion-discapacidad');
@@ -350,6 +373,96 @@ async function loadLocations(parentCode, select) {
         if (!response.ok) throw new Error('No se pudo cargar la ubicación.');
         const locations = await response.json();
         locations.forEach((location) => select.add(new Option(location.nombre, location.codigo)));
+        select.disabled = locations.length === 0;
+    } catch (error) {
+        Swal.fire({ title: 'No se pudo cargar la ubicación', text: error.message, icon: 'error', confirmButtonColor: '#23313b' });
+    }
+}
+
+function setupForeignLocationSet(config) {
+    const country = document.getElementById(config.countryId);
+    const foreignCountry = document.getElementById(config.foreignCountryId);
+    const state = document.getElementById(config.stateId);
+    const city = document.getElementById(config.cityId);
+    if (!country || !foreignCountry || !state || !city) return;
+
+    loadForeignCountries(foreignCountry);
+    country.addEventListener('change', () => toggleForeignLocationSet(config));
+    foreignCountry.addEventListener('change', async () => {
+        resetSelect(state, 'Seleccione estado o región');
+        resetSelect(city, 'Seleccione ciudad o municipio');
+        if (foreignCountry.value) await loadForeignLocations('estados', state, { pais: foreignCountry.value });
+    });
+    state.addEventListener('change', async () => {
+        resetSelect(city, 'Seleccione ciudad o municipio');
+        if (state.value) await loadForeignLocations('ciudades', city, { pais: foreignCountry.value, estado: state.value });
+    });
+    toggleForeignLocationSet(config);
+}
+
+function toggleForeignLocationSet(config) {
+    const country = document.getElementById(config.countryId);
+    const foreignCountry = document.getElementById(config.foreignCountryId);
+    const state = document.getElementById(config.stateId);
+    const city = document.getElementById(config.cityId);
+    const isPeru = country?.value === 'Perú';
+
+    config.peruIds.forEach((id, index) => {
+        const select = document.getElementById(id);
+        if (!select) return;
+        const field = select.closest('.field');
+        if (field) field.hidden = !isPeru;
+        select.disabled = !isPeru || (index > 0 && !select.value);
+        if (!isPeru) resetSelect(select, ['Seleccione departamento', 'Seleccione provincia', 'Seleccione distrito'][index]);
+    });
+
+    ['countryWrapId', 'stateWrapId', 'cityWrapId'].forEach((key) => {
+        const wrapper = document.getElementById(config[key]);
+        if (wrapper) wrapper.hidden = isPeru;
+    });
+    foreignCountry.disabled = isPeru;
+    state.disabled = isPeru || !foreignCountry.value;
+    city.disabled = isPeru || !state.value;
+    foreignCountry.required = !isPeru;
+    state.required = !isPeru;
+    city.required = !isPeru;
+}
+
+async function loadForeignCountries(select) {
+    try {
+        const response = await fetch('/cepre_untels/public/api/extranjeras.php?operacion=paises');
+        if (!response.ok) throw new Error('No se pudieron cargar los países.');
+        const countries = await response.json();
+        countries.forEach((country) => select.add(new Option(country.nombre, country.nombre)));
+    } catch (error) {
+        Swal.fire({ title: 'No se pudieron cargar los países', text: error.message, icon: 'error', confirmButtonColor: '#23313b' });
+    }
+}
+
+async function loadForeignLocations(operation, select, parameters) {
+    try {
+        const query = new URLSearchParams({ operacion: operation, ...parameters });
+        let response = await fetch(`/cepre_untels/public/api/extranjeras.php?${query}`);
+        let locations = response.ok ? await response.json() : [];
+        if (!Array.isArray(locations) || locations.length === 0) {
+            const externalUrl = operation === 'estados'
+                ? 'https://countriesnow.space/api/v0.1/countries/states'
+                : 'https://countriesnow.space/api/v0.1/countries/state/cities';
+            const externalPayload = operation === 'estados'
+                ? { country: parameters.pais }
+                : { country: parameters.pais, state: parameters.estado };
+            response = await fetch(externalUrl, {
+                method: 'POST',
+                headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+                body: JSON.stringify(externalPayload)
+            });
+            if (!response.ok) throw new Error('No se pudo cargar la ubicación extranjera.');
+            const result = await response.json();
+            locations = operation === 'estados'
+                ? (result.data?.states || []).map((item) => ({ codigo: item.state_code || item.name, nombre: item.name }))
+                : (result.data || []).map((item) => ({ codigo: item, nombre: item }));
+        }
+        locations.forEach((location) => select.add(new Option(location.nombre, location.nombre)));
         select.disabled = locations.length === 0;
     } catch (error) {
         Swal.fire({ title: 'No se pudo cargar la ubicación', text: error.message, icon: 'error', confirmButtonColor: '#23313b' });

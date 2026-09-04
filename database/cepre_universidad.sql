@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 04-09-2026 a las 13:53:13
+-- Tiempo de generación: 04-09-2026 a las 23:13:51
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -660,7 +660,7 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id_usuario`, `nombre_usuario`, `email`, `contrasena_hash`, `nombre_completo`, `rol`, `estado`, `ultimo_acceso`, `fecha_creacion`) VALUES
-(1, 'admin', 'admin@cepre.com', '$2y$12$ItVj5aQ0tVZAwNJCgzQqM.4NV2xew8PwPDJMtx4WpO6DZAGVrcSX2', 'Administrador del Sistema', 'ADMIN', 'ACTIVO', '2026-09-04 11:47:16', '2026-09-02 22:25:07'),
+(1, 'admin', 'admin@cepre.com', '$2y$12$ItVj5aQ0tVZAwNJCgzQqM.4NV2xew8PwPDJMtx4WpO6DZAGVrcSX2', 'Administrador del Sistema', 'ADMIN', 'ACTIVO', '2026-09-04 21:00:34', '2026-09-02 22:25:07'),
 (2, 'secretario', 'secretario@cepre.com', '$2y$10$2A.SFvFk9f4E9QYjKMTn4OGNW9DnTBO6pYmNwZ9kT7sFE6XWXwLx2', 'Secretario Académico', 'SECRETARIO', 'ACTIVO', NULL, '2026-09-02 22:25:07');
 
 -- --------------------------------------------------------
