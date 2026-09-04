@@ -18,8 +18,7 @@ try {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         verifyCsrfToken($_POST['csrf_token'] ?? null);
         $model->actualizarFicha($matriculaId, $_POST, $_FILES);
-        $carreraId = (int) ($_POST['carrera_id'] ?? 0);
-        header('Location: /cepre_untels/public/fichas.php?carrera_id=' . $carreraId . '&matricula_id=' . $matriculaId);
+        header('Location: /cepre_untels/public/editar.php?matricula_id=' . $matriculaId . '&actualizado=1');
         exit;
     }
     $ficha = $model->fichaEstudiante($matriculaId);
@@ -56,6 +55,7 @@ $discoveryOptions = [
 $discoveryStored = trim((string) ($ficha['como_se_entero_cepre'] ?? ''));
 $discoveryIsOther = $discoveryStored !== '' && !array_key_exists($discoveryStored, $discoveryOptions);
 $discoverySelected = $discoveryIsOther ? 'otro' : $discoveryStored;
+$cambiosGuardados = ($_GET['actualizado'] ?? '') === '1';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -67,6 +67,7 @@ $discoverySelected = $discoveryIsOther ? 'otro' : $discoveryStored;
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1;100..900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="/cepre_untels/public/css/app.css?v=20260908">
 </head>
 <body>
@@ -110,7 +111,7 @@ $discoverySelected = $discoveryIsOther ? 'otro' : $discoveryStored;
                 <div class="field field--span-2"><label for="direccion">Dirección actual</label><input id="direccion" name="direccion_actual" value="<?= editValue($ficha, 'direccion_actual') ?>"></div>
             </div></section>
             <section class="section-block"><h2>Origen y formación</h2><div class="form-grid form-grid--three">
-                <div class="field"><label for="pais-nacimiento">País de nacimiento</label><input id="pais-nacimiento" name="pais_nacimiento" value="<?= editValue($ficha, 'pais_nacimiento') ?>"></div>
+                <div class="field"><label for="pais-nacimiento">País de nacimiento</label><input id="pais-nacimiento" name="pais_nacimiento" value="<?= editValue($ficha, 'pais_nacimiento') ?>" readonly></div>
                 <div class="field"><label for="departamento-nacimiento">Departamento / estado</label><input id="departamento-nacimiento" name="departamento_nacimiento" value="<?= editValue($ficha, 'departamento_nacimiento') ?>" readonly></div>
                 <div class="field"><label for="provincia-nacimiento">Provincia</label><input id="provincia-nacimiento" name="provincia_nacimiento" value="<?= editValue($ficha, 'provincia_nacimiento') ?>" readonly></div>
                 <div class="field">
@@ -155,5 +156,13 @@ $discoverySelected = $discoveryIsOther ? 'otro' : $discoveryStored;
     </main>
     <?php require __DIR__ . '/../app/views/partials/site-footer.php'; ?>
     <script src="/cepre_untels/public/js/app.js?v=20260908"></script>
+    <?php if ($cambiosGuardados): ?>
+        <script>
+            Swal.fire({ title: '¡Cambios realizados correctamente!', icon: 'success', confirmButtonColor: '#23313b' })
+                .then(() => {
+                    window.location.href = '/cepre_untels/public/fichas.php?carrera_id=<?= (int) $ficha['carrera_id'] ?>&matricula_id=<?= $matriculaId ?>';
+                });
+        </script>
+    <?php endif; ?>
 </body>
 </html>

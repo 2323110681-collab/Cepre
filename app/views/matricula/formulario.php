@@ -118,8 +118,8 @@ $usuarioActual = currentUser();
                 </div>
             </section>
 
-            <section class="section-block" id="datos-apoderado" hidden>
-                <h2>Datos del apoderado</h2>
+            <section class="section-block" id="datos-apoderado">
+                <h2>Datos de tus apoderados</h2>
                 <div class="form-grid form-grid--three">
                     <div class="field"><label for="apoderado-nombres">Nombres completos</label><input id="apoderado-nombres" name="apoderado_nombres" type="text"></div>
                     <div class="field"><label for="apoderado-parentesco">Parentesco</label><input id="apoderado-parentesco" name="apoderado_parentesco" type="text"></div>

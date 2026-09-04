@@ -260,7 +260,6 @@ function resetConditionalFields() {
     toggleAcademicFields(false);
     const guardianSection = document.getElementById('datos-apoderado');
     if (!guardianSection) return;
-    guardianSection.hidden = true;
     guardianSection.querySelectorAll('input').forEach((field) => { field.required = false; });
 }
 
