@@ -433,7 +433,12 @@ async function loadForeignCountries(select) {
         const response = await fetch('/cepre_untels/public/api/extranjeras.php?operacion=paises');
         if (!response.ok) throw new Error('No se pudieron cargar los países.');
         const countries = await response.json();
-        countries.forEach((country) => select.add(new Option(country.nombre, country.nombre)));
+        countries.forEach((country) => {
+            // Excluir Perú de la lista de países extranjeros
+            if (country.nombre.toLocaleLowerCase() !== 'perú') {
+                select.add(new Option(country.nombre, country.nombre));
+            }
+        });
     } catch (error) {
         Swal.fire({ title: 'No se pudieron cargar los países', text: error.message, icon: 'error', confirmButtonColor: '#23313b' });
     }

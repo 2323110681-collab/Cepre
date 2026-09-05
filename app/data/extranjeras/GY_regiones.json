@@ -1,0 +1,38 @@
+[
+  {
+    "codigo": "BL",
+    "nombre": "Barima-Waini"
+  },
+  {
+    "codigo": "CU",
+    "nombre": "Cuyuni-Mazaruni"
+  },
+  {
+    "codigo": "DE",
+    "nombre": "Demerara-Mahaica"
+  },
+  {
+    "codigo": "EC",
+    "nombre": "East Canje"
+  },
+  {
+    "codigo": "ES",
+    "nombre": "Essequibo Corentijn"
+  },
+  {
+    "codigo": "MA",
+    "nombre": "Mahaica-Berbice"
+  },
+  {
+    "codigo": "PM",
+    "nombre": "Pomeroon-Supenaam"
+  },
+  {
+    "codigo": "UD",
+    "nombre": "Upper Demerara-Berbice"
+  },
+  {
+    "codigo": "UT",
+    "nombre": "Upper Takutu-Upper Essequibo"
+  }
+]

@@ -27,125 +27,99 @@ if ($operacion === 'ciudades' && ($pais === '' || $estado === '')) {
     exit;
 }
 
-$apiUrl = match ($operacion) {
-    'paises' => 'https://countriesnow.space/api/v0.1/countries',
-    'estados' => 'https://countriesnow.space/api/v0.1/countries/states',
-    'ciudades' => 'https://countriesnow.space/api/v0.1/countries/state/cities',
-};
+// Ruta base para archivos JSON
+$dataPath = __DIR__ . '/../../app/data/extranjeras/';
 
-$payload = match ($operacion) {
-    'paises' => null,
-    'estados' => ['country' => $pais],
-    'ciudades' => ['country' => $pais, 'state' => $estado],
-};
-
-$response = false;
-$status = 0;
-$error = '';
-
-if (function_exists('curl_init')) {
-    $curl = curl_init($apiUrl);
-    curl_setopt_array($curl, [
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_CONNECTTIMEOUT => 5,
-        CURLOPT_TIMEOUT => 15,
-        CURLOPT_HTTPHEADER => ['Accept: application/json', 'Content-Type: application/json'],
-    ]);
-    if ($payload !== null) {
-        curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($payload, JSON_UNESCAPED_UNICODE));
+/**
+ * Cargar datos desde archivo JSON local
+ */
+function loadJsonFile(string $filePath): array
+{
+    if (!file_exists($filePath)) {
+        return [];
     }
-    $response = curl_exec($curl);
-    $status = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
-    $error = curl_error($curl);
-    curl_close($curl);
-} else {
-    $options = [
-        'http' => [
-            'method' => $payload === null ? 'GET' : 'POST',
-            'header' => "Accept: application/json\r\nContent-Type: application/json\r\n",
-            'content' => $payload === null ? '' : json_encode($payload, JSON_UNESCAPED_UNICODE),
-            'timeout' => 15,
-            'ignore_errors' => true,
-        ],
-    ];
-    $context = stream_context_create($options);
-    $response = @file_get_contents($apiUrl, false, $context);
-    $statusLine = $http_response_header[0] ?? '';
-    preg_match('/\s(\d{3})\s/', $statusLine, $statusMatches);
-    $status = (int) ($statusMatches[1] ?? 0);
-    $error = $response === false ? 'No se pudo conectar con el servicio externo.' : '';
-}
-
-if (is_string($response) && $response !== '') {
-    $error = '';
-    $status = $status > 0 ? $status : 200;
-}
-
-if ($payload !== null && ($response === false || $error !== '' || $status < 200 || $status >= 300)) {
-    $context = stream_context_create([
-        'http' => [
-            'method' => 'POST',
-            'header' => "Accept: application/json\r\nContent-Type: application/json\r\n",
-            'content' => json_encode($payload, JSON_UNESCAPED_UNICODE),
-            'timeout' => 15,
-            'ignore_errors' => true,
-        ],
-    ]);
-    $response = @file_get_contents($apiUrl, false, $context);
-    $statusLine = $http_response_header[0] ?? '';
-    preg_match('/\s(\d{3})\s/', $statusLine, $statusMatches);
-    $status = (int) ($statusMatches[1] ?? 0);
-    $error = $response === false ? 'No se pudo conectar con el servicio externo.' : '';
-    if (is_string($response) && $response !== '') {
-        $error = '';
-        $status = $status > 0 ? $status : 200;
+    
+    $content = file_get_contents($filePath);
+    if ($content === false) {
+        return [];
     }
+    
+    $decoded = json_decode($content, true);
+    return is_array($decoded) ? $decoded : [];
 }
 
-if ($response === false || $error !== '' || $status < 200 || $status >= 300) {
-    http_response_code(502);
-    echo json_encode(['error' => 'No se pudo consultar el servicio de ubicaciones extranjeras.'], JSON_UNESCAPED_UNICODE);
-    exit;
-}
+$locations = [];
 
-$result = json_decode((string) $response, true);
-if (!is_array($result) || !empty($result['error'])) {
-    http_response_code(502);
-    echo json_encode(['error' => $result['msg'] ?? 'El servicio devolvió una respuesta no válida.'], JSON_UNESCAPED_UNICODE);
-    exit;
-}
-
-$data = $result['data'] ?? [];
 if ($operacion === 'paises') {
-    $locations = array_map(
-        static fn (array $item): array => [
-            'codigo' => (string) ($item['iso2'] ?? $item['iso3'] ?? ''),
-            'nombre' => (string) ($item['country'] ?? ''),
-        ],
-        is_array($data) ? $data : []
-    );
+    $locations = loadJsonFile($dataPath . 'paises.json');
 } elseif ($operacion === 'estados') {
+    // Buscar el archivo de provincias/departamentos/estados del país
+    $countryFiles = [
+        'AR' => 'AR_provincias.json',
+        'BO' => 'BO_departamentos.json',
+        'BR' => 'BR_estados.json',
+        'CL' => 'CL_regiones.json',
+        'CO' => 'CO_departamentos.json',
+        'EC' => 'EC_provincias.json',
+        'GY' => 'GY_regiones.json',
+        'PY' => 'PY_departamentos.json',
+        'PE' => 'PE_departamentos.json',
+        'SR' => 'SR_distritos.json',
+        'UY' => 'UY_departamentos.json',
+        'VE' => 'VE_estados.json',
+    ];
+    
+    $fileName = $countryFiles[$pais] ?? null;
+    if ($fileName) {
+        $locations = loadJsonFile($dataPath . $fileName);
+    } else {
+        http_response_code(404);
+        echo json_encode(['error' => 'No se encontraron divisiones para el país indicado.'], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+} elseif ($operacion === 'ciudades') {
+    // Buscar archivo de ciudades
+    $fileName = $pais . '_' . $estado . '_ciudades.json';
+    $filePath = $dataPath . $fileName;
+    
+    $data = loadJsonFile($filePath);
+    if (empty($data)) {
+        // Si no existe, intentar cargar archivo general del país
+        $fallbackFile = $dataPath . $pais . '_ciudades.json';
+        $data = loadJsonFile($fallbackFile);
+    }
+    
+    // Convertir array de strings a formato con código y nombre
     $locations = array_map(
-        static fn (array $item): array => [
-            'codigo' => (string) ($item['state_code'] ?? $item['name'] ?? ''),
-            'nombre' => (string) ($item['name'] ?? ''),
-        ],
-        is_array($data['states'] ?? null) ? $data['states'] : []
-    );
-} else {
-    $locations = array_map(
-        static fn (string $item): array => ['codigo' => $item, 'nombre' => $item],
-        array_values(array_filter(is_array($data) ? $data : [], 'is_string'))
+        static fn ($item): array => is_array($item)
+            ? ['codigo' => $item['codigo'] ?? $item['nombre'] ?? '', 'nombre' => $item['nombre'] ?? '']
+            : ['codigo' => $item, 'nombre' => $item],
+        $data
     );
 }
 
+// Validar que tenemos datos
+if (empty($locations)) {
+    http_response_code(404);
+    echo json_encode(['error' => 'No se encontraron resultados para la búsqueda.'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+// Filtrar por búsqueda si se proporciona
 if ($buscar !== '') {
     $locations = array_values(array_filter(
         $locations,
-        static fn (array $location): bool => str_contains(mb_strtolower($location['nombre'], 'UTF-8'), $buscar)
+        static fn (array $location): bool => str_contains(
+            mb_strtolower((string) ($location['nombre'] ?? ''), 'UTF-8'),
+            $buscar
+        )
     ));
 }
 
-usort($locations, static fn (array $left, array $right): int => strcasecmp($left['nombre'], $right['nombre']));
+// Ordenar alfabéticamente
+usort($locations, static fn (array $left, array $right): int => strcasecmp(
+    (string) ($left['nombre'] ?? ''),
+    (string) ($right['nombre'] ?? '')
+));
+
 echo json_encode($locations, JSON_UNESCAPED_UNICODE);

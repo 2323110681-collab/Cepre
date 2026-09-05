@@ -1,0 +1,98 @@
+[
+  {
+    "codigo": "AM",
+    "nombre": "Amazonas"
+  },
+  {
+    "codigo": "AN",
+    "nombre": "Anzoátegui"
+  },
+  {
+    "codigo": "AP",
+    "nombre": "Apure"
+  },
+  {
+    "codigo": "AR",
+    "nombre": "Aragua"
+  },
+  {
+    "codigo": "BA",
+    "nombre": "Barinas"
+  },
+  {
+    "codigo": "BO",
+    "nombre": "Bolívar"
+  },
+  {
+    "codigo": "CA",
+    "nombre": "Carabobo"
+  },
+  {
+    "codigo": "CL",
+    "nombre": "Cojedes"
+  },
+  {
+    "codigo": "DL",
+    "nombre": "Delta Amacuro"
+  },
+  {
+    "codigo": "DC",
+    "nombre": "Distrito Capital"
+  },
+  {
+    "codigo": "FA",
+    "nombre": "Falcón"
+  },
+  {
+    "codigo": "GU",
+    "nombre": "Guárico"
+  },
+  {
+    "codigo": "LA",
+    "nombre": "Lara"
+  },
+  {
+    "codigo": "ME",
+    "nombre": "Mérida"
+  },
+  {
+    "codigo": "MI",
+    "nombre": "Miranda"
+  },
+  {
+    "codigo": "MO",
+    "nombre": "Monagas"
+  },
+  {
+    "codigo": "NE",
+    "nombre": "Nueva Esparta"
+  },
+  {
+    "codigo": "PO",
+    "nombre": "Portuguesa"
+  },
+  {
+    "codigo": "SU",
+    "nombre": "Sucre"
+  },
+  {
+    "codigo": "TA",
+    "nombre": "Táchira"
+  },
+  {
+    "codigo": "TR",
+    "nombre": "Trujillo"
+  },
+  {
+    "codigo": "VA",
+    "nombre": "Vargas"
+  },
+  {
+    "codigo": "YA",
+    "nombre": "Yaracuy"
+  },
+  {
+    "codigo": "ZU",
+    "nombre": "Zulia"
+  }
+]
