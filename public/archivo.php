@@ -5,7 +5,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../config/auth.php';
 require_once __DIR__ . '/../app/models/MatriculaModel.php';
 
-requireAuthentication();
+requireAdminAuthentication();
 
 $matriculaId = filter_var($_GET['matricula_id'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 if ($matriculaId === false || $matriculaId === null) {

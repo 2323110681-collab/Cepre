@@ -5,7 +5,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../config/auth.php';
 require_once __DIR__ . '/../app/models/MatriculaModel.php';
 
-requireAuthentication();
+requireAdminAuthentication();
 
 $model = new MatriculaModel();
 $carreras = $model->catalogos()['carreras'];

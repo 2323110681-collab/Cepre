@@ -36,11 +36,31 @@ function isAuthenticated(): bool
     return isset($_SESSION['user_id']);
 }
 
+function isStudent(): bool
+{
+    startSession();
+    return isset($_SESSION['user']['rol']) && $_SESSION['user']['rol'] === 'ALUMNO';
+}
+
+function isAdmin(): bool
+{
+    startSession();
+    return isset($_SESSION['user']['rol']) && $_SESSION['user']['rol'] !== 'ALUMNO';
+}
+
 function requireAuthentication(): void
 {
     if (!isAuthenticated()) {
+        header('Location: /cepre_untels/public/login_alumnos.php');
+        exit();
+    }
+}
+
+function requireAdminAuthentication(): void
+{
+    if (!isAuthenticated() || !isAdmin()) {
         header('Location: /cepre_untels/public/login.php');
-        exit;
+        exit();
     }
 }
 
