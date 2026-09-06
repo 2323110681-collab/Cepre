@@ -97,7 +97,7 @@ $usuarioActual = currentUser();
                     <div class="actions">
                         <button class="button button--gold" type="button" data-preview="foto">Previsualizar foto</button>
                         <button class="button button--gold" type="button" data-preview="documento">Previsualizar documento</button>
-                        <button class="button button--dark" type="button" id="download-form">Descargar Declaración Jurada</button>
+                        <a class="button button--dark" href="https://cepre.untels.edu.pe/declaracion%20jurada_formato/mayores.pdf" target="_blank" rel="noopener noreferrer">Descargar Declaración Jurada</a>
                     </div>
                 </div>
             </section>

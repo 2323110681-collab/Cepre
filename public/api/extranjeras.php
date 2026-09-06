@@ -89,13 +89,7 @@ if ($operacion === 'paises') {
         $data = loadJsonFile($fallbackFile);
     }
     
-    // Convertir array de strings a formato con código y nombre
-    $locations = array_map(
-        static fn ($item): array => is_array($item)
-            ? ['codigo' => $item['codigo'] ?? $item['nombre'] ?? '', 'nombre' => $item['nombre'] ?? '']
-            : ['codigo' => $item, 'nombre' => $item],
-        $data
-    );
+    $locations = $data;
 }
 
 // Validar que tenemos datos
@@ -104,6 +98,14 @@ if (empty($locations)) {
     echo json_encode(['error' => 'No se encontraron resultados para la búsqueda.'], JSON_UNESCAPED_UNICODE);
     exit;
 }
+
+// Los catálogos pueden contener objetos {codigo, nombre} o nombres simples.
+$locations = array_map(
+    static fn ($item): array => is_array($item)
+        ? ['codigo' => (string) ($item['codigo'] ?? $item['nombre'] ?? ''), 'nombre' => (string) ($item['nombre'] ?? '')]
+        : ['codigo' => (string) $item, 'nombre' => (string) $item],
+    $locations
+);
 
 // Filtrar por búsqueda si se proporciona
 if ($buscar !== '') {

@@ -10,7 +10,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.querySelectorAll('[data-preview]').forEach((button) => {
-        button.addEventListener('click', () => document.getElementById(button.dataset.preview)?.click());
+        button.addEventListener('click', () => {
+            const input = document.getElementById(button.dataset.preview);
+            const file = input?.files?.[0];
+            if (!input) return;
+            if (!file) {
+                input.click();
+                return;
+            }
+
+            window.open(URL.createObjectURL(file), '_blank', 'noopener,noreferrer');
+        });
     });
 
     document.getElementById('download-form')?.addEventListener('click', () => window.print());
@@ -434,9 +444,8 @@ async function loadForeignCountries(select) {
         if (!response.ok) throw new Error('No se pudieron cargar los países.');
         const countries = await response.json();
         countries.forEach((country) => {
-            // Excluir Perú de la lista de países extranjeros
             if (country.nombre.toLocaleLowerCase() !== 'perú') {
-                select.add(new Option(country.nombre, country.nombre));
+                select.add(new Option(country.nombre, country.codigo));
             }
         });
     } catch (error) {
@@ -447,27 +456,13 @@ async function loadForeignCountries(select) {
 async function loadForeignLocations(operation, select, parameters) {
     try {
         const query = new URLSearchParams({ operacion: operation, ...parameters });
-        let response = await fetch(`/cepre_untels/public/api/extranjeras.php?${query}`);
-        let locations = response.ok ? await response.json() : [];
-        if (!Array.isArray(locations) || locations.length === 0) {
-            const externalUrl = operation === 'estados'
-                ? 'https://countriesnow.space/api/v0.1/countries/states'
-                : 'https://countriesnow.space/api/v0.1/countries/state/cities';
-            const externalPayload = operation === 'estados'
-                ? { country: parameters.pais }
-                : { country: parameters.pais, state: parameters.estado };
-            response = await fetch(externalUrl, {
-                method: 'POST',
-                headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-                body: JSON.stringify(externalPayload)
-            });
-            if (!response.ok) throw new Error('No se pudo cargar la ubicación extranjera.');
-            const result = await response.json();
-            locations = operation === 'estados'
-                ? (result.data?.states || []).map((item) => ({ codigo: item.state_code || item.name, nombre: item.name }))
-                : (result.data || []).map((item) => ({ codigo: item, nombre: item }));
+        const response = await fetch(`/cepre_untels/public/api/extranjeras.php?${query}`);
+        if (!response.ok) {
+            throw new Error('No hay ubicaciones locales disponibles para la selección.');
         }
-        locations.forEach((location) => select.add(new Option(location.nombre, location.nombre)));
+        const locations = await response.json();
+        if (!Array.isArray(locations)) throw new Error('La respuesta de ubicaciones no es válida.');
+        locations.forEach((location) => select.add(new Option(location.nombre, location.codigo)));
         select.disabled = locations.length === 0;
     } catch (error) {
         Swal.fire({ title: 'No se pudo cargar la ubicación', text: error.message, icon: 'error', confirmButtonColor: '#23313b' });
