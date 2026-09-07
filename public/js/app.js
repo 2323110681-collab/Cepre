@@ -2,11 +2,35 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.querySelector('.enrollment-form');
     const previews = {
         foto: document.querySelector('.preview--photo'),
-        documento: document.querySelector('.preview--document')
+        documento: document.querySelector('.preview--document'),
+        declaracion_jurada: document.querySelector('.preview--declaracion_jurada')
     };
 
     document.querySelectorAll('input[type="file"]').forEach((input) => {
-        input.addEventListener('change', () => showFilePreview(input));
+        input.addEventListener('change', () => {
+            const file = input.files[0];
+            if (file && file.size > 5 * 1024 * 1024) {
+                input.value = ''; // clear the input
+                resetPreview(input.id);
+                Swal.fire({
+                    title: 'Archivo demasiado grande',
+                    text: 'El archivo no debe pesar más de 5MB.',
+                    icon: 'error',
+                    confirmButtonColor: '#23313b'
+                });
+                return;
+            }
+            showFilePreview(input);
+        });
+    });
+
+    document.querySelectorAll('[data-remove-file]').forEach((button) => {
+        button.addEventListener('click', () => {
+            const input = document.getElementById(button.dataset.removeFile);
+            if (!input) return;
+            input.value = '';
+            resetPreview(input.id);
+        });
     });
 
     document.querySelectorAll('[data-preview]').forEach((button) => {
@@ -264,12 +288,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const missingFiles = [...form.querySelectorAll('input[type="file"]')]
             .filter((field) => field.required && !field.disabled && field.files.length === 0)
-            .map((field) => field.id === 'foto' ? 'la foto carnet' : 'la copia del documento');
+            .map((field) => {
+                if (field.id === 'foto') return 'la foto carnet';
+                if (field.id === 'declaracion_jurada') return 'la declaración jurada';
+                return 'la copia del documento';
+            });
         if (missingFiles.length > 0) {
             event.preventDefault();
             Swal.fire({
                 title: 'Faltan archivos',
-                text: `Adjunte ${missingFiles.join(' y ')} para guardar la matrícula.`,
+                text: `Adjunte ${missingFiles.join(', ').replace(/,([^,]*)$/, ' y$1')} para guardar la matrícula.`,
                 icon: 'warning',
                 confirmButtonColor: '#23313b'
             });
@@ -277,8 +305,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function resetPreviews() {
-        previews.foto.textContent = 'Foto';
-        previews.documento.textContent = 'DNI';
+        Object.keys(previews).forEach((fileId) => resetPreview(fileId));
+    }
+
+    function resetPreview(fileId) {
+        const preview = previews[fileId];
+        if (!preview) return;
+        const labels = { foto: 'Foto', documento: 'DNI', declaracion_jurada: 'DJ' };
+        const removeButton = preview.querySelector('[data-remove-file]');
+        preview.replaceChildren(document.createTextNode(labels[fileId] || 'Archivo'));
+        if (removeButton) {
+            removeButton.hidden = true;
+            preview.appendChild(removeButton);
+        }
     }
 });
 
@@ -305,15 +344,34 @@ function showFilePreview(input) {
         editPhotoPreview.hidden = false;
         return;
     }
-    const preview = document.querySelector(input.id === 'foto' ? '.preview--photo' : '.preview--document');
+
+    let previewClass = '.preview--document';
+    if (input.id === 'foto') previewClass = '.preview--photo';
+    if (input.id === 'declaracion_jurada') previewClass = '.preview--declaracion_jurada';
+
+    const preview = document.querySelector(previewClass);
     if (!file || !preview) return;
+    const removeButton = preview.querySelector('[data-remove-file]');
+
+    const setPreviewContent = (content) => {
+        preview.replaceChildren(content);
+        if (removeButton) {
+            removeButton.hidden = false;
+            preview.appendChild(removeButton);
+        }
+    };
 
     if (file.type.startsWith('image/')) {
         const image = document.createElement('img');
         image.src = URL.createObjectURL(file);
-        image.alt = input.id === 'foto' ? 'Vista previa de la foto carnet' : 'Vista previa del documento';
+
+        let altText = 'Vista previa del documento';
+        if (input.id === 'foto') altText = 'Vista previa de la foto carnet';
+        if (input.id === 'declaracion_jurada') altText = 'Vista previa de la declaración jurada';
+        image.alt = altText;
+
         image.onload = () => URL.revokeObjectURL(image.src);
-        preview.replaceChildren(image);
+        setPreviewContent(image);
         return;
     }
 
@@ -321,14 +379,13 @@ function showFilePreview(input) {
         const documentPreview = document.createElement('iframe');
         documentPreview.src = URL.createObjectURL(file);
         documentPreview.title = 'Vista previa del documento PDF';
-        preview.replaceChildren(documentPreview);
+        setPreviewContent(documentPreview);
         return;
     }
 
-    preview.replaceChildren();
     const label = document.createElement('span');
     label.textContent = `${file.name} (${formatFileSize(file.size)})`;
-    preview.appendChild(label);
+    setPreviewContent(label);
 }
 
 function formatFileSize(bytes) {
@@ -468,4 +525,3 @@ async function loadForeignLocations(operation, select, parameters) {
         Swal.fire({ title: 'No se pudo cargar la ubicación', text: error.message, icon: 'error', confirmButtonColor: '#23313b' });
     }
 }
-

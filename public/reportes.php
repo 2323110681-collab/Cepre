@@ -79,9 +79,9 @@ foreach ($catalogos['periodos'] as $periodo) {
   <link rel="icon" type="image/png" href="/cepre_untels/public/img/cepre.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/cepre_untels/public/css/app.css?v=20260907">
   <link rel="stylesheet" href="/cepre_untels/public/css/reportes.css?v=20260907">
+  <link href="https://fonts.googleapis.com/css2?family=Alatsi&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 </head>
 <body>
 <?php require __DIR__ . '/../app/views/partials/site-header.php'; ?>

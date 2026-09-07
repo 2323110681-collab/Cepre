@@ -1,0 +1,340 @@
+[Mon Sep  7 02:13:35 2026] PHP 8.3.6 Development Server (http://localhost:8000) started
+[Mon Sep  7 02:13:36 2026] [::1]:33556 Accepted
+[Mon Sep  7 02:13:36 2026] [::1]:33556 [302]: GET /cepre_untels/public/
+[Mon Sep  7 02:13:36 2026] [::1]:33556 Closing
+[Mon Sep  7 02:13:36 2026] [::1]:33568 Accepted
+[Mon Sep  7 02:13:36 2026] [::1]:33568 [200]: GET /cepre_untels/public/login_alumnos.php
+[Mon Sep  7 02:13:36 2026] [::1]:33568 Closing
+[Mon Sep  7 02:13:36 2026] [::1]:33574 Accepted
+[Mon Sep  7 02:13:36 2026] [::1]:33590 Accepted
+[Mon Sep  7 02:13:36 2026] [::1]:33598 Accepted
+[Mon Sep  7 02:13:36 2026] [::1]:33612 Accepted
+[Mon Sep  7 02:13:36 2026] [::1]:33628 Accepted
+[Mon Sep  7 02:13:36 2026] [::1]:33642 Accepted
+[Mon Sep  7 02:13:36 2026] [::1]:33574 [200]: GET /cepre_untels/public/css/app.css?v=20260906-student-login
+[Mon Sep  7 02:13:36 2026] [::1]:33590 [200]: GET /cepre_untels/public/img/cepre.png
+[Mon Sep  7 02:13:36 2026] [::1]:33598 [200]: GET /cepre_untels/public/img/voucher_ejemplo.jpg
+[Mon Sep  7 02:13:36 2026] [::1]:33612 [404]: GET /cepre_untels/public/img/footer/facebook.webp - No such file or directory
+[Mon Sep  7 02:13:36 2026] [::1]:33574 Closing
+[Mon Sep  7 02:13:36 2026] [::1]:33612 Closing
+[Mon Sep  7 02:13:36 2026] [::1]:33654 Accepted
+[Mon Sep  7 02:13:36 2026] [::1]:33590 Closing
+[Mon Sep  7 02:13:36 2026] [::1]:33598 Closing
+[Mon Sep  7 02:13:36 2026] [::1]:33628 [200]: GET /cepre_untels/public/img/footer/twitter.png
+[Mon Sep  7 02:13:36 2026] [::1]:33642 [404]: GET /cepre_untels/public/img/footer/youtube.webp - No such file or directory
+[Mon Sep  7 02:13:36 2026] [::1]:33656 Accepted
+[Mon Sep  7 02:13:36 2026] [::1]:33642 Closing
+[Mon Sep  7 02:13:36 2026] [::1]:33628 Closing
+[Mon Sep  7 02:13:36 2026] [::1]:33662 Accepted
+[Mon Sep  7 02:13:36 2026] [::1]:33654 [200]: GET /cepre_untels/public/img/footer/instagram.webp
+[Mon Sep  7 02:13:36 2026] [::1]:33654 Closing
+[Mon Sep  7 02:13:36 2026] [::1]:33656 [200]: GET /cepre_untels/public/img/footer/location.svg
+[Mon Sep  7 02:13:36 2026] [::1]:33656 Closing
+[Mon Sep  7 02:13:36 2026] [::1]:33666 Accepted
+[Mon Sep  7 02:13:36 2026] [::1]:33672 Accepted
+[Mon Sep  7 02:13:36 2026] [::1]:33662 [200]: GET /cepre_untels/public/img/footer/email.svg
+[Mon Sep  7 02:13:36 2026] [::1]:33662 Closing
+[Mon Sep  7 02:13:36 2026] [::1]:33666 [200]: GET /cepre_untels/public/img/footer/phone.svg
+[Mon Sep  7 02:13:36 2026] [::1]:33672 [200]: GET /cepre_untels/public/img/footer/clock.svg
+[Mon Sep  7 02:13:36 2026] [::1]:33666 Closing
+[Mon Sep  7 02:13:36 2026] [::1]:33672 Closing
+[Mon Sep  7 02:14:25 2026] [::1]:52980 Accepted
+[Mon Sep  7 02:14:25 2026] PHP Warning:  require_once(/app/public/../../config/auth.php): Failed to open stream: No such file or directory in /app/public/test_auth.php on line 2
+[Mon Sep  7 02:14:25 2026] PHP Fatal error:  Uncaught Error: Failed opening required '/app/public/../../config/auth.php' (include_path='.:/usr/share/php') in /app/public/test_auth.php:2
+Stack trace:
+#0 {main}
+  thrown in /app/public/test_auth.php on line 2
+[Mon Sep  7 02:14:25 2026] [::1]:52980 [500]: GET /cepre_untels/public/test_auth.php - Uncaught Error: Failed opening required '/app/public/../../config/auth.php' (include_path='.:/usr/share/php') in /app/public/test_auth.php:2
+Stack trace:
+#0 {main}
+  thrown in /app/public/test_auth.php on line 2
+[Mon Sep  7 02:14:25 2026] [::1]:52980 Closing
+[Mon Sep  7 02:14:26 2026] [::1]:52992 Accepted
+[Mon Sep  7 02:14:26 2026] [::1]:52992 [302]: GET /cepre_untels/public/
+[Mon Sep  7 02:14:26 2026] [::1]:52992 Closing
+[Mon Sep  7 02:14:26 2026] [::1]:53004 Accepted
+[Mon Sep  7 02:14:26 2026] [::1]:53004 [200]: GET /cepre_untels/public/login_alumnos.php
+[Mon Sep  7 02:14:26 2026] [::1]:53004 Closing
+[Mon Sep  7 02:14:26 2026] [::1]:53020 Accepted
+[Mon Sep  7 02:14:26 2026] [::1]:53026 Accepted
+[Mon Sep  7 02:14:26 2026] [::1]:53028 Accepted
+[Mon Sep  7 02:14:26 2026] [::1]:53020 [200]: GET /cepre_untels/public/css/app.css?v=20260906-student-login
+[Mon Sep  7 02:14:26 2026] [::1]:53026 [200]: GET /cepre_untels/public/img/cepre.png
+[Mon Sep  7 02:14:26 2026] [::1]:53020 Closing
+[Mon Sep  7 02:14:26 2026] [::1]:53026 Closing
+[Mon Sep  7 02:14:26 2026] [::1]:53028 [200]: GET /cepre_untels/public/img/voucher_ejemplo.jpg
+[Mon Sep  7 02:14:26 2026] [::1]:53028 Closing
+[Mon Sep  7 02:14:26 2026] [::1]:53040 Accepted
+[Mon Sep  7 02:14:26 2026] [::1]:53052 Accepted
+[Mon Sep  7 02:14:26 2026] [::1]:53040 [404]: GET /cepre_untels/public/img/footer/facebook.webp - No such file or directory
+[Mon Sep  7 02:14:26 2026] [::1]:53052 [200]: GET /cepre_untels/public/img/footer/twitter.png
+[Mon Sep  7 02:14:26 2026] [::1]:53040 Closing
+[Mon Sep  7 02:14:26 2026] [::1]:53052 Closing
+[Mon Sep  7 02:14:26 2026] [::1]:53056 Accepted
+[Mon Sep  7 02:14:26 2026] [::1]:53072 Accepted
+[Mon Sep  7 02:14:26 2026] [::1]:53086 Accepted
+[Mon Sep  7 02:14:26 2026] [::1]:53096 Accepted
+[Mon Sep  7 02:14:26 2026] [::1]:53104 Accepted
+[Mon Sep  7 02:14:26 2026] [::1]:53056 [404]: GET /cepre_untels/public/img/footer/youtube.webp - No such file or directory
+[Mon Sep  7 02:14:26 2026] [::1]:53056 Closing
+[Mon Sep  7 02:14:26 2026] [::1]:53072 [200]: GET /cepre_untels/public/img/footer/instagram.webp
+[Mon Sep  7 02:14:26 2026] [::1]:53086 [200]: GET /cepre_untels/public/img/footer/location.svg
+[Mon Sep  7 02:14:26 2026] [::1]:53086 Closing
+[Mon Sep  7 02:14:26 2026] [::1]:53096 [200]: GET /cepre_untels/public/img/footer/email.svg
+[Mon Sep  7 02:14:26 2026] [::1]:53072 Closing
+[Mon Sep  7 02:14:26 2026] [::1]:53104 [200]: GET /cepre_untels/public/img/footer/phone.svg
+[Mon Sep  7 02:14:26 2026] [::1]:53118 Accepted
+[Mon Sep  7 02:14:26 2026] [::1]:53096 Closing
+[Mon Sep  7 02:14:26 2026] [::1]:53104 Closing
+[Mon Sep  7 02:14:26 2026] [::1]:53118 [200]: GET /cepre_untels/public/img/footer/clock.svg
+[Mon Sep  7 02:14:26 2026] [::1]:53118 Closing
+[Mon Sep  7 02:15:28 2026] [::1]:52192 Accepted
+[Mon Sep  7 02:15:28 2026] PHP Warning:  require_once(/app/public/../../config/auth.php): Failed to open stream: No such file or directory in /app/public/test_auth.php on line 2
+[Mon Sep  7 02:15:28 2026] PHP Fatal error:  Uncaught Error: Failed opening required '/app/public/../../config/auth.php' (include_path='.:/usr/share/php') in /app/public/test_auth.php:2
+Stack trace:
+#0 {main}
+  thrown in /app/public/test_auth.php on line 2
+[Mon Sep  7 02:15:28 2026] [::1]:52192 [500]: GET /cepre_untels/public/test_auth.php - Uncaught Error: Failed opening required '/app/public/../../config/auth.php' (include_path='.:/usr/share/php') in /app/public/test_auth.php:2
+Stack trace:
+#0 {main}
+  thrown in /app/public/test_auth.php on line 2
+[Mon Sep  7 02:15:28 2026] [::1]:52192 Closing
+[Mon Sep  7 02:15:29 2026] [::1]:52198 Accepted
+[Mon Sep  7 02:15:29 2026] [::1]:52198 [302]: GET /cepre_untels/public/
+[Mon Sep  7 02:15:29 2026] [::1]:52198 Closing
+[Mon Sep  7 02:15:29 2026] [::1]:52210 Accepted
+[Mon Sep  7 02:15:29 2026] [::1]:52210 [200]: GET /cepre_untels/public/login_alumnos.php
+[Mon Sep  7 02:15:29 2026] [::1]:52210 Closing
+[Mon Sep  7 02:15:29 2026] [::1]:52220 Accepted
+[Mon Sep  7 02:15:29 2026] [::1]:52226 Accepted
+[Mon Sep  7 02:15:29 2026] [::1]:52234 Accepted
+[Mon Sep  7 02:15:29 2026] [::1]:52220 [200]: GET /cepre_untels/public/css/app.css?v=20260906-student-login
+[Mon Sep  7 02:15:29 2026] [::1]:52220 Closing
+[Mon Sep  7 02:15:29 2026] [::1]:52226 [200]: GET /cepre_untels/public/img/cepre.png
+[Mon Sep  7 02:15:29 2026] [::1]:52234 [200]: GET /cepre_untels/public/img/voucher_ejemplo.jpg
+[Mon Sep  7 02:15:29 2026] [::1]:52226 Closing
+[Mon Sep  7 02:15:29 2026] [::1]:52234 Closing
+[Mon Sep  7 02:15:29 2026] [::1]:52250 Accepted
+[Mon Sep  7 02:15:29 2026] [::1]:52256 Accepted
+[Mon Sep  7 02:15:29 2026] [::1]:52260 Accepted
+[Mon Sep  7 02:15:29 2026] [::1]:52266 Accepted
+[Mon Sep  7 02:15:29 2026] [::1]:52278 Accepted
+[Mon Sep  7 02:15:29 2026] [::1]:52292 Accepted
+[Mon Sep  7 02:15:29 2026] [::1]:52250 [404]: GET /cepre_untels/public/img/footer/facebook.webp - No such file or directory
+[Mon Sep  7 02:15:29 2026] [::1]:52250 Closing
+[Mon Sep  7 02:15:29 2026] [::1]:52256 [200]: GET /cepre_untels/public/img/footer/twitter.png
+[Mon Sep  7 02:15:29 2026] [::1]:52260 [404]: GET /cepre_untels/public/img/footer/youtube.webp - No such file or directory
+[Mon Sep  7 02:15:29 2026] [::1]:52260 Closing
+[Mon Sep  7 02:15:29 2026] [::1]:52256 Closing
+[Mon Sep  7 02:15:29 2026] [::1]:52266 [200]: GET /cepre_untels/public/img/footer/instagram.webp
+[Mon Sep  7 02:15:29 2026] [::1]:52266 Closing
+[Mon Sep  7 02:15:29 2026] [::1]:52278 [200]: GET /cepre_untels/public/img/footer/location.svg
+[Mon Sep  7 02:15:29 2026] [::1]:52278 Closing
+[Mon Sep  7 02:15:29 2026] [::1]:52292 [200]: GET /cepre_untels/public/img/footer/email.svg
+[Mon Sep  7 02:15:29 2026] [::1]:52292 Closing
+[Mon Sep  7 02:15:29 2026] [::1]:52298 Accepted
+[Mon Sep  7 02:15:29 2026] [::1]:52312 Accepted
+[Mon Sep  7 02:15:29 2026] [::1]:52298 [200]: GET /cepre_untels/public/img/footer/phone.svg
+[Mon Sep  7 02:15:29 2026] [::1]:52312 [200]: GET /cepre_untels/public/img/footer/clock.svg
+[Mon Sep  7 02:15:29 2026] [::1]:52298 Closing
+[Mon Sep  7 02:15:29 2026] [::1]:52312 Closing
+[Mon Sep  7 02:16:32 2026] [::1]:56712 Accepted
+[Mon Sep  7 02:16:32 2026] PHP Warning:  require_once(/app/public/../../config/auth.php): Failed to open stream: No such file or directory in /app/public/test_auth.php on line 2
+[Mon Sep  7 02:16:32 2026] PHP Fatal error:  Uncaught Error: Failed opening required '/app/public/../../config/auth.php' (include_path='.:/usr/share/php') in /app/public/test_auth.php:2
+Stack trace:
+#0 {main}
+  thrown in /app/public/test_auth.php on line 2
+[Mon Sep  7 02:16:32 2026] [::1]:56712 [500]: GET /cepre_untels/public/test_auth.php - Uncaught Error: Failed opening required '/app/public/../../config/auth.php' (include_path='.:/usr/share/php') in /app/public/test_auth.php:2
+Stack trace:
+#0 {main}
+  thrown in /app/public/test_auth.php on line 2
+[Mon Sep  7 02:16:32 2026] [::1]:56712 Closing
+[Mon Sep  7 02:16:33 2026] [::1]:56718 Accepted
+[Mon Sep  7 02:16:33 2026] [::1]:56718 [302]: GET /cepre_untels/public/
+[Mon Sep  7 02:16:33 2026] [::1]:56718 Closing
+[Mon Sep  7 02:16:33 2026] [::1]:56734 Accepted
+[Mon Sep  7 02:16:33 2026] [::1]:56734 [200]: GET /cepre_untels/public/login_alumnos.php
+[Mon Sep  7 02:16:33 2026] [::1]:56734 Closing
+[Mon Sep  7 02:16:33 2026] [::1]:56738 Accepted
+[Mon Sep  7 02:16:33 2026] [::1]:56748 Accepted
+[Mon Sep  7 02:16:33 2026] [::1]:56752 Accepted
+[Mon Sep  7 02:16:33 2026] [::1]:56738 [200]: GET /cepre_untels/public/css/app.css?v=20260906-student-login
+[Mon Sep  7 02:16:33 2026] [::1]:56748 [200]: GET /cepre_untels/public/img/cepre.png
+[Mon Sep  7 02:16:33 2026] [::1]:56752 [200]: GET /cepre_untels/public/img/voucher_ejemplo.jpg
+[Mon Sep  7 02:16:33 2026] [::1]:56738 Closing
+[Mon Sep  7 02:16:33 2026] [::1]:56748 Closing
+[Mon Sep  7 02:16:33 2026] [::1]:56752 Closing
+[Mon Sep  7 02:16:33 2026] [::1]:56768 Accepted
+[Mon Sep  7 02:16:33 2026] [::1]:56778 Accepted
+[Mon Sep  7 02:16:33 2026] [::1]:56768 [404]: GET /cepre_untels/public/img/footer/facebook.webp - No such file or directory
+[Mon Sep  7 02:16:33 2026] [::1]:56768 Closing
+[Mon Sep  7 02:16:33 2026] [::1]:56778 [200]: GET /cepre_untels/public/img/footer/twitter.png
+[Mon Sep  7 02:16:33 2026] [::1]:56778 Closing
+[Mon Sep  7 02:16:33 2026] [::1]:56780 Accepted
+[Mon Sep  7 02:16:33 2026] [::1]:56786 Accepted
+[Mon Sep  7 02:16:33 2026] [::1]:56800 Accepted
+[Mon Sep  7 02:16:33 2026] [::1]:56812 Accepted
+[Mon Sep  7 02:16:33 2026] [::1]:56814 Accepted
+[Mon Sep  7 02:16:33 2026] [::1]:56826 Accepted
+[Mon Sep  7 02:16:33 2026] [::1]:56780 [404]: GET /cepre_untels/public/img/footer/youtube.webp - No such file or directory
+[Mon Sep  7 02:16:33 2026] [::1]:56780 Closing
+[Mon Sep  7 02:16:33 2026] [::1]:56786 [200]: GET /cepre_untels/public/img/footer/instagram.webp
+[Mon Sep  7 02:16:33 2026] [::1]:56800 [200]: GET /cepre_untels/public/img/footer/location.svg
+[Mon Sep  7 02:16:33 2026] [::1]:56800 Closing
+[Mon Sep  7 02:16:33 2026] [::1]:56786 Closing
+[Mon Sep  7 02:16:33 2026] [::1]:56812 [200]: GET /cepre_untels/public/img/footer/email.svg
+[Mon Sep  7 02:16:33 2026] [::1]:56814 [200]: GET /cepre_untels/public/img/footer/phone.svg
+[Mon Sep  7 02:16:33 2026] [::1]:56812 Closing
+[Mon Sep  7 02:16:33 2026] [::1]:56814 Closing
+[Mon Sep  7 02:16:33 2026] [::1]:56826 [200]: GET /cepre_untels/public/img/footer/clock.svg
+[Mon Sep  7 02:16:33 2026] [::1]:56826 Closing
+[Mon Sep  7 02:17:22 2026] [::1]:34882 Accepted
+[Mon Sep  7 02:17:22 2026] [::1]:34882 [302]: GET /cepre_untels/public/
+[Mon Sep  7 02:17:22 2026] [::1]:34882 Closing
+[Mon Sep  7 02:17:22 2026] [::1]:34890 Accepted
+[Mon Sep  7 02:17:22 2026] [::1]:34890 [200]: GET /cepre_untels/public/login_alumnos.php
+[Mon Sep  7 02:17:22 2026] [::1]:34890 Closing
+[Mon Sep  7 02:17:22 2026] [::1]:34906 Accepted
+[Mon Sep  7 02:17:22 2026] [::1]:34906 [200]: GET /cepre_untels/public/css/app.css?v=20260906-student-login
+[Mon Sep  7 02:17:22 2026] [::1]:34908 Accepted
+[Mon Sep  7 02:17:22 2026] [::1]:34906 Closing
+[Mon Sep  7 02:17:22 2026] [::1]:34914 Accepted
+[Mon Sep  7 02:17:22 2026] [::1]:34908 [200]: GET /cepre_untels/public/img/cepre.png
+[Mon Sep  7 02:17:22 2026] [::1]:34914 [200]: GET /cepre_untels/public/img/voucher_ejemplo.jpg
+[Mon Sep  7 02:17:22 2026] [::1]:34908 Closing
+[Mon Sep  7 02:17:22 2026] [::1]:34914 Closing
+[Mon Sep  7 02:17:22 2026] [::1]:34928 Accepted
+[Mon Sep  7 02:17:22 2026] [::1]:34940 Accepted
+[Mon Sep  7 02:17:22 2026] [::1]:34944 Accepted
+[Mon Sep  7 02:17:22 2026] [::1]:34948 Accepted
+[Mon Sep  7 02:17:22 2026] [::1]:34956 Accepted
+[Mon Sep  7 02:17:22 2026] [::1]:34970 Accepted
+[Mon Sep  7 02:17:22 2026] [::1]:34928 [404]: GET /cepre_untels/public/img/footer/facebook.webp - No such file or directory
+[Mon Sep  7 02:17:22 2026] [::1]:34928 Closing
+[Mon Sep  7 02:17:22 2026] [::1]:34940 [200]: GET /cepre_untels/public/img/footer/twitter.png
+[Mon Sep  7 02:17:22 2026] [::1]:34944 [404]: GET /cepre_untels/public/img/footer/youtube.webp - No such file or directory
+[Mon Sep  7 02:17:22 2026] [::1]:34944 Closing
+[Mon Sep  7 02:17:22 2026] [::1]:34940 Closing
+[Mon Sep  7 02:17:22 2026] [::1]:34948 [200]: GET /cepre_untels/public/img/footer/instagram.webp
+[Mon Sep  7 02:17:22 2026] [::1]:34956 [200]: GET /cepre_untels/public/img/footer/location.svg
+[Mon Sep  7 02:17:22 2026] [::1]:34970 [200]: GET /cepre_untels/public/img/footer/email.svg
+[Mon Sep  7 02:17:22 2026] [::1]:34956 Closing
+[Mon Sep  7 02:17:22 2026] [::1]:34970 Closing
+[Mon Sep  7 02:17:22 2026] [::1]:34948 Closing
+[Mon Sep  7 02:17:22 2026] [::1]:34982 Accepted
+[Mon Sep  7 02:17:22 2026] [::1]:34996 Accepted
+[Mon Sep  7 02:17:22 2026] [::1]:34982 [200]: GET /cepre_untels/public/img/footer/phone.svg
+[Mon Sep  7 02:17:22 2026] [::1]:34996 [200]: GET /cepre_untels/public/img/footer/clock.svg
+[Mon Sep  7 02:17:22 2026] [::1]:34982 Closing
+[Mon Sep  7 02:17:22 2026] [::1]:34996 Closing
+[Mon Sep  7 02:17:44 2026] [::1]:50798 Accepted
+[Mon Sep  7 02:17:44 2026] PHP Warning:  require_once(/app/public/../../config/auth.php): Failed to open stream: No such file or directory in /app/public/test_auth2.php on line 3
+[Mon Sep  7 02:17:44 2026] PHP Fatal error:  Uncaught Error: Failed opening required '/app/public/../../config/auth.php' (include_path='.:/usr/share/php') in /app/public/test_auth2.php:3
+Stack trace:
+#0 {main}
+  thrown in /app/public/test_auth2.php on line 3
+[Mon Sep  7 02:17:44 2026] [::1]:50798 [500]: GET /cepre_untels/public/test_auth2.php - Uncaught Error: Failed opening required '/app/public/../../config/auth.php' (include_path='.:/usr/share/php') in /app/public/test_auth2.php:3
+Stack trace:
+#0 {main}
+  thrown in /app/public/test_auth2.php on line 3
+[Mon Sep  7 02:17:44 2026] [::1]:50798 Closing
+[Mon Sep  7 02:17:45 2026] [::1]:50812 Accepted
+[Mon Sep  7 02:17:45 2026] [::1]:50812 [302]: GET /cepre_untels/public/
+[Mon Sep  7 02:17:45 2026] [::1]:50812 Closing
+[Mon Sep  7 02:17:45 2026] [::1]:50820 Accepted
+[Mon Sep  7 02:17:45 2026] [::1]:50820 [200]: GET /cepre_untels/public/login_alumnos.php
+[Mon Sep  7 02:17:45 2026] [::1]:50820 Closing
+[Mon Sep  7 02:17:45 2026] [::1]:50834 Accepted
+[Mon Sep  7 02:17:45 2026] [::1]:50836 Accepted
+[Mon Sep  7 02:17:45 2026] [::1]:50848 Accepted
+[Mon Sep  7 02:17:45 2026] [::1]:50834 [200]: GET /cepre_untels/public/css/app.css?v=20260906-student-login
+[Mon Sep  7 02:17:45 2026] [::1]:50836 [200]: GET /cepre_untels/public/img/cepre.png
+[Mon Sep  7 02:17:45 2026] [::1]:50848 [200]: GET /cepre_untels/public/img/voucher_ejemplo.jpg
+[Mon Sep  7 02:17:45 2026] [::1]:50834 Closing
+[Mon Sep  7 02:17:45 2026] [::1]:50836 Closing
+[Mon Sep  7 02:17:45 2026] [::1]:50848 Closing
+[Mon Sep  7 02:17:45 2026] [::1]:50858 Accepted
+[Mon Sep  7 02:17:45 2026] [::1]:50868 Accepted
+[Mon Sep  7 02:17:45 2026] [::1]:50878 Accepted
+[Mon Sep  7 02:17:45 2026] [::1]:50884 Accepted
+[Mon Sep  7 02:17:45 2026] [::1]:50858 [404]: GET /cepre_untels/public/img/footer/facebook.webp - No such file or directory
+[Mon Sep  7 02:17:45 2026] [::1]:50858 Closing
+[Mon Sep  7 02:17:45 2026] [::1]:50886 Accepted
+[Mon Sep  7 02:17:45 2026] [::1]:50868 [200]: GET /cepre_untels/public/img/footer/twitter.png
+[Mon Sep  7 02:17:45 2026] [::1]:50878 [404]: GET /cepre_untels/public/img/footer/youtube.webp - No such file or directory
+[Mon Sep  7 02:17:45 2026] [::1]:50884 [200]: GET /cepre_untels/public/img/footer/instagram.webp
+[Mon Sep  7 02:17:45 2026] [::1]:50902 Accepted
+[Mon Sep  7 02:17:45 2026] [::1]:50878 Closing
+[Mon Sep  7 02:17:45 2026] [::1]:50904 Accepted
+[Mon Sep  7 02:17:45 2026] [::1]:50868 Closing
+[Mon Sep  7 02:17:45 2026] [::1]:50884 Closing
+[Mon Sep  7 02:17:45 2026] [::1]:50886 [200]: GET /cepre_untels/public/img/footer/location.svg
+[Mon Sep  7 02:17:45 2026] [::1]:50902 [200]: GET /cepre_untels/public/img/footer/email.svg
+[Mon Sep  7 02:17:45 2026] [::1]:50886 Closing
+[Mon Sep  7 02:17:45 2026] [::1]:50902 Closing
+[Mon Sep  7 02:17:45 2026] [::1]:50918 Accepted
+[Mon Sep  7 02:17:45 2026] [::1]:50904 [200]: GET /cepre_untels/public/img/footer/phone.svg
+[Mon Sep  7 02:17:45 2026] [::1]:50904 Closing
+[Mon Sep  7 02:17:45 2026] [::1]:50918 [200]: GET /cepre_untels/public/img/footer/clock.svg
+[Mon Sep  7 02:17:45 2026] [::1]:50918 Closing
+[Mon Sep  7 02:19:19 2026] [::1]:40184 Accepted
+[Mon Sep  7 02:19:19 2026] PHP Warning:  require_once(/app/public/../../app/controllers/MatriculaController.php): Failed to open stream: No such file or directory in /app/public/test_index.php on line 3
+[Mon Sep  7 02:19:19 2026] PHP Fatal error:  Uncaught Error: Failed opening required '/app/public/../../app/controllers/MatriculaController.php' (include_path='.:/usr/share/php') in /app/public/test_index.php:3
+Stack trace:
+#0 {main}
+  thrown in /app/public/test_index.php on line 3
+[Mon Sep  7 02:19:19 2026] [::1]:40184 [500]: GET /cepre_untels/public/test_index.php - Uncaught Error: Failed opening required '/app/public/../../app/controllers/MatriculaController.php' (include_path='.:/usr/share/php') in /app/public/test_index.php:3
+Stack trace:
+#0 {main}
+  thrown in /app/public/test_index.php on line 3
+[Mon Sep  7 02:19:19 2026] [::1]:40184 Closing
+[Mon Sep  7 02:20:43 2026] [::1]:43828 Accepted
+[Mon Sep  7 02:20:43 2026] PHP Fatal error:  Cannot redeclare isAuthenticated() (previously declared in /app/public/test_index.php:7) in /app/config/auth.php on line 35
+[Mon Sep  7 02:20:43 2026] [::1]:43828 [500]: GET /cepre_untels/public/test_index.php - Cannot redeclare isAuthenticated() (previously declared in /app/public/test_index.php:7) in /app/config/auth.php on line 35
+[Mon Sep  7 02:20:43 2026] [::1]:43828 Closing
+[Mon Sep  7 02:21:51 2026] [::1]:45610 Accepted
+[Mon Sep  7 02:21:51 2026] CEPRE matrícula: PDOException - SQLSTATE[HY000] [2002] Connection refused
+[Mon Sep  7 02:21:51 2026] [::1]:45610 [200]: GET /cepre_untels/public/test_index.php
+[Mon Sep  7 02:21:51 2026] [::1]:45610 Closing
+[Mon Sep  7 02:21:51 2026] [::1]:45620 Accepted
+[Mon Sep  7 02:21:51 2026] [::1]:45622 Accepted
+[Mon Sep  7 02:21:51 2026] [::1]:45624 Accepted
+[Mon Sep  7 02:21:51 2026] [::1]:45620 [200]: GET /cepre_untels/public/css/app.css?v=20260909
+[Mon Sep  7 02:21:51 2026] [::1]:45622 [200]: GET /cepre_untels/public/img/cepre.png
+[Mon Sep  7 02:21:51 2026] [::1]:45624 [404]: GET /cepre_untels/public/img/footer/facebook.webp - No such file or directory
+[Mon Sep  7 02:21:51 2026] [::1]:45620 Closing
+[Mon Sep  7 02:21:51 2026] [::1]:45624 Closing
+[Mon Sep  7 02:21:51 2026] [::1]:45622 Closing
+[Mon Sep  7 02:21:51 2026] [::1]:45636 Accepted
+[Mon Sep  7 02:21:51 2026] [::1]:45636 [200]: GET /cepre_untels/public/img/footer/twitter.png
+[Mon Sep  7 02:21:51 2026] [::1]:45636 Closing
+[Mon Sep  7 02:21:51 2026] [::1]:45646 Accepted
+[Mon Sep  7 02:21:51 2026] [::1]:45646 [404]: GET /cepre_untels/public/img/footer/youtube.webp - No such file or directory
+[Mon Sep  7 02:21:51 2026] [::1]:45646 Closing
+[Mon Sep  7 02:21:51 2026] [::1]:45654 Accepted
+[Mon Sep  7 02:21:51 2026] [::1]:45654 [200]: GET /cepre_untels/public/js/app.js?v=20260912
+[Mon Sep  7 02:21:51 2026] [::1]:45654 Closing
+[Mon Sep  7 02:21:51 2026] [::1]:45660 Accepted
+[Mon Sep  7 02:21:51 2026] [::1]:45660 [200]: GET /cepre_untels/public/img/footer/instagram.webp
+[Mon Sep  7 02:21:51 2026] [::1]:45660 Closing
+[Mon Sep  7 02:21:51 2026] [::1]:45670 Accepted
+[Mon Sep  7 02:21:51 2026] [::1]:45670 [200]: GET /cepre_untels/public/img/footer/location.svg
+[Mon Sep  7 02:21:51 2026] [::1]:45670 Closing
+[Mon Sep  7 02:21:51 2026] [::1]:45678 Accepted
+[Mon Sep  7 02:21:51 2026] [::1]:45678 [200]: GET /cepre_untels/public/img/footer/email.svg
+[Mon Sep  7 02:21:51 2026] [::1]:45678 Closing
+[Mon Sep  7 02:21:51 2026] [::1]:45692 Accepted
+[Mon Sep  7 02:21:51 2026] [::1]:45692 [200]: GET /cepre_untels/public/img/footer/phone.svg
+[Mon Sep  7 02:21:51 2026] [::1]:45692 Closing
+[Mon Sep  7 02:21:51 2026] [::1]:45696 Accepted
+[Mon Sep  7 02:21:51 2026] [::1]:45696 [200]: GET /cepre_untels/public/img/footer/clock.svg
+[Mon Sep  7 02:21:51 2026] [::1]:45696 Closing
+[Mon Sep  7 02:21:51 2026] [::1]:45698 Accepted
+[Mon Sep  7 02:21:51 2026] [::1]:45698 [200]: GET /cepre_untels/public/api/extranjeras.php?operacion=paises
+[Mon Sep  7 02:21:51 2026] [::1]:45698 Closing
+[Mon Sep  7 02:21:51 2026] [::1]:45708 Accepted
+[Mon Sep  7 02:21:51 2026] [::1]:45708 [200]: GET /cepre_untels/public/api/extranjeras.php?operacion=paises
+[Mon Sep  7 02:21:51 2026] [::1]:45708 Closing
+[Mon Sep  7 02:21:51 2026] [::1]:45714 Accepted
+[Mon Sep  7 02:21:51 2026] [::1]:45714 [200]: GET /cepre_untels/public/api/extranjeras.php?operacion=paises
+[Mon Sep  7 02:21:51 2026] [::1]:45714 Closing

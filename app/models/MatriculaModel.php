@@ -553,7 +553,10 @@ final class MatriculaModel
 
     private function storeFiles(array $files, int $matriculaId, bool $certificateRequired = false): void
     {
-        $fileTypes = ['foto' => 'FOTO_CARNET', 'documento' => 'COPIA_DOCUMENTO'];
+        // Asegurarse de que el tipo DECLARACION_JURADA exista en la base de datos
+        $this->connection->exec("INSERT IGNORE INTO tipos_archivo (nombre) VALUES ('DECLARACION_JURADA')");
+
+        $fileTypes = ['foto' => 'FOTO_CARNET', 'documento' => 'COPIA_DOCUMENTO', 'declaracion_jurada' => 'DECLARACION_JURADA'];
         if ($certificateRequired) $fileTypes['certificado_discapacidad'] = 'CERTIFICADO_DISCAPACIDAD';
         $directory = __DIR__ . '/../storage/matriculas/';
         if (!is_dir($directory) && !mkdir($directory, 0700, true) && !is_dir($directory)) {
@@ -563,13 +566,18 @@ final class MatriculaModel
         $allowed = [
             'foto' => ['image/jpeg' => 'jpg', 'image/png' => 'png'],
             'documento' => ['image/jpeg' => 'jpg', 'image/png' => 'png', 'application/pdf' => 'pdf'],
+            'declaracion_jurada' => ['image/jpeg' => 'jpg', 'image/png' => 'png', 'application/pdf' => 'pdf'],
             'certificado_discapacidad' => ['image/jpeg' => 'jpg', 'image/png' => 'png', 'application/pdf' => 'pdf'],
         ];
         foreach ($fileTypes as $field => $typeName) {
             if (($files[$field]['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
-                throw new InvalidArgumentException($field === 'certificado_discapacidad'
-                    ? 'Debe adjuntar el certificado de discapacidad.'
-                    : 'Debe adjuntar la foto y la copia del documento.');
+                if ($field === 'certificado_discapacidad') {
+                    throw new InvalidArgumentException('Debe adjuntar el certificado de discapacidad.');
+                } elseif ($field === 'declaracion_jurada') {
+                    throw new InvalidArgumentException('Debe adjuntar la declaración jurada.');
+                } else {
+                    throw new InvalidArgumentException('Debe adjuntar la foto y la copia del documento.');
+                }
             }
             if (($files[$field]['error'] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK || ($files[$field]['size'] ?? 0) > 5 * 1024 * 1024) {
                 throw new InvalidArgumentException('Los archivos deben ser válidos y pesar como máximo 5 MB.');

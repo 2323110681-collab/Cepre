@@ -66,7 +66,7 @@ $cambiosGuardados = ($_GET['actualizado'] ?? '') === '1';
     <link rel="icon" type="image/png" href="/cepre_untels/public/img/cepre.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1;100..900&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Alatsi&family=Roboto:ital,wght@0;100..900;1;100..900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="/cepre_untels/public/css/app.css?v=20260908">
 </head>

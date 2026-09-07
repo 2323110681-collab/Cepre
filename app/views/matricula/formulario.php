@@ -23,7 +23,7 @@ $usuarioActual = currentUser();
     <link rel="icon" type="image/png" href="/cepre_untels/public/img/cepre.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Alatsi&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="/cepre_untels/public/css/app.css?v=20260909">
 </head>
@@ -70,7 +70,12 @@ $usuarioActual = currentUser();
                         <input id="documento" name="documento" type="file" accept="image/jpeg,image/png,application/pdf" required>
                         <span class="file-button">Subir DNI</span>
                     </div>
-                    <p class="hint">Foto del rostro con fondo blanco.<br>Escaneo o foto del DNI por ambos caras.<br>Formatos permitidos: JPG, PNG o PDF.</p>
+                    <div class="upload-row">
+                        <label for="declaracion_jurada">Declaración Jurada</label>
+                        <input id="declaracion_jurada" name="declaracion_jurada" type="file" accept="image/jpeg,image/png,application/pdf" required>
+                        <span class="file-button">Subir Declaración Jurada</span>
+                    </div>
+                    <p class="hint">Foto del rostro con fondo blanco.<br>Escaneo o foto del DNI por ambos caras.<br>Formatos permitidos: JPG, PNG o PDF. Máximo 5 MB.</p>
                 </div>
 
                 <div class="panel panel--compact">
@@ -91,12 +96,14 @@ $usuarioActual = currentUser();
                         </select>
                     </div>
                     <div class="preview-grid">
-                        <div class="preview preview--photo"><span>Foto</span></div>
-                        <div class="preview preview--document"><span>DNI</span></div>
+                        <div class="preview preview--photo"><span>Foto</span><button class="preview-remove" type="button" data-remove-file="foto" aria-label="Eliminar foto" hidden>X</button></div>
+                        <div class="preview preview--document"><span>DNI</span><button class="preview-remove" type="button" data-remove-file="documento" aria-label="Eliminar documento" hidden>X</button></div>
+                        <div class="preview preview--declaracion_jurada"><span>DJ</span><button class="preview-remove" type="button" data-remove-file="declaracion_jurada" aria-label="Eliminar declaración jurada" hidden>X</button></div>
                     </div>
                     <div class="actions">
                         <button class="button button--gold" type="button" data-preview="foto">Previsualizar foto</button>
                         <button class="button button--gold" type="button" data-preview="documento">Previsualizar documento</button>
+                        <button class="button button--gold" type="button" data-preview="declaracion_jurada">Previsualizar DJ</button>
                         <a class="button button--dark" href="https://cepre.untels.edu.pe/declaracion%20jurada_formato/mayores.pdf" target="_blank" rel="noopener noreferrer">Descargar Declaración Jurada</a>
                     </div>
                 </div>

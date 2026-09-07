@@ -18,7 +18,7 @@ Sistema web para registrar y consultar matrículas del Centro Preuniversitario d
 
 2. Iniciar **Apache** y **MySQL** desde el panel de XAMPP.
 3. Crear o verificar la base de datos `cepre_universidad` en phpMyAdmin.
-4. Para una instalación nueva, importar `database/cepre_untels.sql`.
+4. Para una instalación nueva, importar `database/cepre_universidad.sql`.
 5. Revisar la conexión en `config/database.php`:
 
    - Servidor: `127.0.0.1`
@@ -35,11 +35,18 @@ No se debe volver a importar el SQL sobre una base que ya contiene matrículas s
 
 ## Acceso
 
-Todas las pantallas principales requieren autenticación. El inicio de sesión está en:
+El sistema tiene dos entradas:
 
-`http://localhost/cepre_untels/public/login.php`
+- **Alumnos:** `http://localhost/cepre_untels/public/login_alumnos.php`. Solicita DNI, entidad de pago y número de operación.
+- **Personal administrativo:** `http://localhost/cepre_untels/public/login.php`. Usa las credenciales registradas en la tabla `usuarios`.
+
+Las pantallas de matrícula, consulta y edición requieren una sesión activa. Los reportes y la administración de fichas requieren un perfil distinto de `ALUMNO`.
 
 La sesión utiliza cookies `HttpOnly`, protección `SameSite` y tokens CSRF para formularios que modifican datos.
+
+### Estado del acceso de alumnos
+
+El formulario de alumnos ya crea una sesión con rol `ALUMNO`, pero la verificación del DNI y del número de operación todavía está pendiente de integración con la API o servicio de pagos correspondiente. Por ahora se valida que ambos campos no estén vacíos; no debe considerarse una autenticación de producción.
 
 ## Funcionalidades
 
@@ -75,6 +82,12 @@ El comportamiento dinámico está en `public/js/app.js`. La validación también
 - `public/fichas.php`: lista estudiantes y muestra una ficha completa.
 - `public/editar.php`: permite actualizar datos de la matrícula.
 - `public/archivo.php`: entrega archivos asociados a una matrícula autorizada.
+
+### APIs
+
+- `public/api/dni.php`: consulta de DNI cuando RENIEC está configurado.
+- `public/api/ubigeos.php`: consulta catálogos de departamentos, provincias y distritos.
+- `public/api/extranjeras.php`: consulta catálogos de países y ubicaciones extranjeras.
 
 ### Reportes
 
@@ -113,7 +126,8 @@ config/
   database.php       Conexión PDO a MySQL.
   reniec.php         Configuración de consulta de DNI.
 database/
-  cepre_untels.sql   Esquema y datos iniciales de la base.
+  cepre_universidad.sql
+                     Esquema y datos iniciales de la base.
 public/
   index.php          Entrada para registrar matrículas.
   login.php          Inicio de sesión.
@@ -154,7 +168,7 @@ Las tablas más importantes son `estudiantes`, `matriculas`, `informacion_academ
 - **No aparecen cambios visuales:** usar `Ctrl + F5` para limpiar la caché del navegador.
 - **No permite guardar discapacidad:** seleccionar tipo y grado, completar necesidades especiales y, si corresponde, especificar el tipo “Otra”.
 - **No aparece el reporte:** iniciar sesión y acceder a `public/reportes.php`.
-- **No importar nuevamente el SQL:** si la base ya tiene datos, hacer exportación desde phpMyAdmin antes de modificar el esquema.
+- **No importar nuevamente el SQL:** si la base ya tiene datos, hacer una exportación desde phpMyAdmin antes de modificar el esquema.
 
 ## Desarrollo
 
