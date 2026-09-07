@@ -86,6 +86,78 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    const guardianDniInput = document.getElementById('apoderado-documento');
+    const guardianDocumentType = document.getElementById('apoderado-tipo-documento');
+    const guardianDniStatus = document.getElementById('apoderado-dni-status');
+    const guardianRelationship = document.getElementById('apoderado-parentesco');
+    const otherGuardianRelationshipWrap = document.getElementById('apoderado-parentesco-otro-wrap');
+    const otherGuardianRelationship = document.getElementById('apoderado-parentesco-otro');
+    const guardianPaternalSurname = document.getElementById('apoderado-apellido-paterno');
+    const guardianMaternalSurname = document.getElementById('apoderado-apellido-materno');
+    const guardianNames = document.getElementById('apoderado-nombres');
+    const guardianFullName = document.getElementById('apoderado-nombres-completos');
+    let guardianDniRequest = null;
+
+    const syncGuardianName = () => {
+        if (!guardianFullName) return;
+        guardianFullName.value = [
+            guardianPaternalSurname?.value,
+            guardianMaternalSurname?.value,
+            guardianNames?.value
+        ].filter(Boolean).join(' ');
+    };
+
+    [guardianPaternalSurname, guardianMaternalSurname, guardianNames].forEach((input) => {
+        input?.addEventListener('input', syncGuardianName);
+    });
+
+    const toggleOtherGuardianRelationship = () => {
+        const isOther = guardianRelationship?.value === 'otro';
+        if (otherGuardianRelationshipWrap) otherGuardianRelationshipWrap.hidden = !isOther;
+        if (otherGuardianRelationship) {
+            otherGuardianRelationship.required = isOther;
+            if (!isOther) otherGuardianRelationship.value = '';
+        }
+    };
+
+    guardianRelationship?.addEventListener('change', toggleOtherGuardianRelationship);
+    toggleOtherGuardianRelationship();
+
+    guardianDniInput?.addEventListener('input', async () => {
+        guardianDniInput.value = guardianDniInput.value.replace(/\D/g, '').slice(0, 8);
+        if (guardianDocumentType?.value !== 'DNI' || guardianDniInput.value.length !== 8) {
+            if (guardianDniStatus) guardianDniStatus.textContent = '';
+            return;
+        }
+
+        if (guardianDniStatus) guardianDniStatus.textContent = 'Consultando...';
+        guardianDniRequest?.abort();
+        guardianDniRequest = new AbortController();
+        try {
+            const response = await fetch(`/cepre_untels/public/api/dni.php?numero=${encodeURIComponent(guardianDniInput.value)}`, {
+                signal: guardianDniRequest.signal,
+                headers: { Accept: 'application/json' }
+            });
+            const responseText = await response.text();
+            let result;
+            try {
+                result = JSON.parse(responseText);
+            } catch {
+                throw new Error('El servidor devolvió una respuesta no válida.');
+            }
+            if (!response.ok) throw new Error(result.error || 'No se pudo consultar el DNI.');
+
+            guardianPaternalSurname.value = result.apellido_paterno || '';
+            guardianMaternalSurname.value = result.apellido_materno || '';
+            guardianNames.value = result.nombres || '';
+            syncGuardianName();
+            if (guardianDniStatus) guardianDniStatus.textContent = 'Datos encontrados.';
+        } catch (error) {
+            if (error.name === 'AbortError') return;
+            if (guardianDniStatus) guardianDniStatus.textContent = error.message;
+        }
+    });
+
     document.querySelectorAll('select[data-location="departamento"]').forEach((departmentSelect) => {
         const prefix = departmentSelect.id.replace('departamento', '');
         const provinceSelect = document.getElementById(`provincia${prefix}`);
@@ -453,6 +525,11 @@ function setupForeignLocationSet(config) {
     const city = document.getElementById(config.cityId);
     if (!country || !foreignCountry || !state || !city) return;
 
+    const department = document.getElementById(config.peruIds[0]);
+    config.departmentOptions = department
+        ? Array.from(department.options).map((option) => ({ value: option.value, text: option.textContent }))
+        : [];
+
     loadForeignCountries(foreignCountry);
     country.addEventListener('change', () => toggleForeignLocationSet(config));
     foreignCountry.addEventListener('change', async () => {
@@ -479,8 +556,17 @@ function toggleForeignLocationSet(config) {
         if (!select) return;
         const field = select.closest('.field');
         if (field) field.hidden = !isPeru;
+        if (isPeru && index === 0 && select.options.length <= 1 && config.departmentOptions?.length) {
+            select.replaceChildren(...config.departmentOptions.map((option) => new Option(option.text, option.value)));
+        }
         select.disabled = !isPeru || (index > 0 && !select.value);
-        if (!isPeru) resetSelect(select, ['Seleccione departamento', 'Seleccione provincia', 'Seleccione distrito'][index]);
+        if (!isPeru) {
+            if (index === 0) {
+                select.value = '';
+            } else {
+                resetSelect(select, ['Seleccione departamento', 'Seleccione provincia', 'Seleccione distrito'][index]);
+            }
+        }
     });
 
     ['countryWrapId', 'stateWrapId', 'cityWrapId'].forEach((key) => {

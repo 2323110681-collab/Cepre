@@ -133,9 +133,14 @@ $usuarioActual = currentUser();
             <section class="section-block" id="datos-apoderado">
                 <h2>Datos de tus apoderados</h2>
                 <div class="form-grid form-grid--three">
-                    <div class="field"><label for="apoderado-nombres">Nombres completos</label><input id="apoderado-nombres" name="apoderado_nombres" type="text"></div>
-                    <div class="field"><label for="apoderado-parentesco">Parentesco</label><input id="apoderado-parentesco" name="apoderado_parentesco" type="text"></div>
-                    <div class="field"><label for="apoderado-documento">Número de documento</label><input id="apoderado-documento" name="apoderado_documento" type="text"></div>
+                    <div class="field"><label for="apoderado-tipo-documento">Tipo de documento</label><select id="apoderado-tipo-documento" name="apoderado_tipo_documento"><option>DNI</option><option>CE</option><option>PASAPORTE</option></select></div>
+                    <div class="field"><label for="apoderado-documento">Número de documento</label><input id="apoderado-documento" name="apoderado_documento" type="text" inputmode="numeric" pattern="[0-9]{8}" maxlength="8" autocomplete="off"><small class="field-status" id="apoderado-dni-status" aria-live="polite"></small></div>
+                    <div class="field"><label for="apoderado-apellido-paterno">Apellido paterno</label><input id="apoderado-apellido-paterno" type="text"></div>
+                    <div class="field"><label for="apoderado-apellido-materno">Apellido materno</label><input id="apoderado-apellido-materno" type="text"></div>
+                    <div class="field"><label for="apoderado-nombres">Nombres</label><input id="apoderado-nombres" type="text"></div>
+                    <input id="apoderado-nombres-completos" name="apoderado_nombres" type="hidden">
+                    <div class="field"><label for="apoderado-parentesco">Parentesco</label><select id="apoderado-parentesco" name="apoderado_parentesco"><option value="">Seleccione parentesco</option><option value="padre">Padre</option><option value="madre">Madre</option><option value="tio">Tío</option><option value="tia">Tía</option><option value="otro">Otro</option></select></div>
+                    <div class="field" id="apoderado-parentesco-otro-wrap" hidden><label for="apoderado-parentesco-otro">Especifique el parentesco</label><input id="apoderado-parentesco-otro" name="apoderado_parentesco_otro" type="text"></div>
                     <div class="field"><label for="apoderado-telefono">Teléfono celular</label><input id="apoderado-telefono" name="apoderado_telefono" type="tel"></div>
                     <div class="field field--span-2"><label for="apoderado-correo">Correo electrónico</label><input id="apoderado-correo" name="apoderado_correo" type="email"></div>
                 </div>
@@ -171,7 +176,15 @@ $usuarioActual = currentUser();
             <section class="section-block" id="academica">
                 <h2>Información académica</h2>
                 <div class="form-grid form-grid--four">
-                    <div class="field" data-academic-adult><label for="anio">Año concluyó secundaria</label><input id="anio" name="anio_conclusion_secundaria" type="number" min="1950" max="2100"></div>
+                    <div class="field" data-academic-adult>
+                        <label for="anio">Año concluyó secundaria</label>
+                        <select id="anio" name="anio_conclusion_secundaria">
+                            <option value="">Seleccione año</option>
+                            <?php for ($anio = (int) date('Y'); $anio >= 1960; $anio--): ?>
+                                <option value="<?= $anio ?>"><?= $anio ?></option>
+                            <?php endfor; ?>
+                        </select>
+                    </div>
                     <div class="field" data-academic-adult><label for="pais-estudios">País</label><select id="pais-estudios" name="pais_estudios"><option value="Perú">Perú</option><option value="Otro">Otro</option></select></div>
                     <div class="field" id="pais-estudios-extranjero-wrap" hidden data-academic-adult><label for="pais-estudios-extranjero">País extranjero</label><select id="pais-estudios-extranjero" name="pais_estudios_otro" disabled><option value="">Seleccione país</option></select></div>
                     <div class="field" data-academic-adult><label for="departamento-estudios">Departamento</label><select id="departamento-estudios" name="departamento_estudios" data-location="departamento"><option value="">Seleccione departamento</option><?php foreach ($catalogos['departamentos'] as $item): ?><option value="<?= htmlspecialchars($item['codigo']) ?>"><?= htmlspecialchars($item['nombre']) ?></option><?php endforeach; ?></select></div>
@@ -220,7 +233,7 @@ $usuarioActual = currentUser();
         </form>
     </main>
     <?php require __DIR__ . '/../partials/site-footer.php'; ?>
-    <script src="/cepre_untels/public/js/app.js?v=20260912"></script>
+    <script src="/cepre_untels/public/js/app.js?v=20260916"></script>
     <?php if ($registroExitoso && $numeroRegistrado !== null): ?>
         <script>
             window.history.replaceState({}, document.title, window.location.pathname);
