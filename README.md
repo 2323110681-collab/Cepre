@@ -58,6 +58,8 @@ La pantalla principal permite registrar:
 - Datos de contacto.
 - Domicilio actual y lugar de nacimiento.
 - Semestre, modalidad, turno y carrera.
+- Modalidad de ingreso: **Con derecho a vacante (Ingreso Directo)** o **Solo Preparación (Sin ingreso directo)**.
+- Modalidad de clase: actualmente solo **VIRTUAL**.
 - Periodo de matrícula `2027-1` para el ciclo vigente.
 - Información del colegio y preparación anterior.
 - Foto carnet y copia del documento.

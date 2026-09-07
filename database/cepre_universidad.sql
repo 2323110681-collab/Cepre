@@ -192,15 +192,6 @@ CREATE TABLE `archivos_matricula` (
 -- Volcado de datos para la tabla `archivos_matricula`
 --
 
-INSERT INTO `archivos_matricula` (`id`, `matricula_id`, `tipo_archivo_id`, `nombre_original`, `ruta`, `mime_type`, `tamano_bytes`, `hash_archivo`, `creado_en`) VALUES
-(1, 7, 1, 'logo.png', 'C:\\xampp\\htdocs\\cepre_untels\\app\\models/../storage/matriculas/c41ba30ca9d2c974cd02cea54b4652d3.png', 'image/png', 27446, 'fc32c65efeed36a24aa03a689995526e412fcd919f3e32e400269ef0361a35c5', '2026-09-02 21:50:40'),
-(2, 7, 2, '04. COMPROMISO - SEGURIDAD Y SALUD EN EL TRABAJO (ANEXO 02).pdf', 'C:\\xampp\\htdocs\\cepre_untels\\app\\models/../storage/matriculas/e5003b8c9c0366b50342c9c1d56776d5.pdf', 'application/pdf', 171795, '5ff67492f405407d7f27df2bc1632b89175c2432cab94031c79ba8a5db38c933', '2026-09-02 21:50:40'),
-(3, 8, 1, 'logo.png', 'C:\\xampp\\htdocs\\cepre_untels\\app\\models/../storage/matriculas/725fae939faf1975a7868ad9ef308e48.png', 'image/png', 27446, 'fc32c65efeed36a24aa03a689995526e412fcd919f3e32e400269ef0361a35c5', '2026-09-02 22:52:43'),
-(4, 8, 2, '01. ANEXOS - SUSCRIPCIÓN DE CONTRATO 2026.pdf', 'C:\\xampp\\htdocs\\cepre_untels\\app\\models/../storage/matriculas/6a702a2a62e7baab10b5a6fe85f6979e.pdf', 'application/pdf', 499742, 'e446f58062adde9225a21d6b4220a16726d2f658150b78f2658927c322990064', '2026-09-02 22:52:43'),
-(5, 9, 1, 'logo.png', 'C:\\xampp\\htdocs\\cepre_untels\\app\\models/../storage/matriculas/ef887aeef22c5f73c2e3ece541b493d0.png', 'image/png', 27446, 'fc32c65efeed36a24aa03a689995526e412fcd919f3e32e400269ef0361a35c5', '2026-09-03 08:28:13'),
-(6, 9, 2, '02. DECLARACIÓN JURADA IMPEDIMENTO CONTRATAR CON EL ESTADO.pdf', 'C:\\xampp\\htdocs\\cepre_untels\\app\\models/../storage/matriculas/54e663b6f847fd19a4f0fe62d6ca57c0.pdf', 'application/pdf', 316011, 'a291e5e9a07660e00d8052b9e9edd600154b658f1eaff20f767381358df63de2', '2026-09-03 08:28:13'),
-(7, 2, 1, 'logo.png', 'C:\\xampp\\htdocs\\cepre_untels\\app\\models/../storage/matriculas/b5c65f16363f33872a19a08b88b67d5a.png', 'image/png', 27446, 'fc32c65efeed36a24aa03a689995526e412fcd919f3e32e400269ef0361a35c5', '2026-09-03 11:13:14');
-
 -- --------------------------------------------------------
 
 --
@@ -238,26 +229,16 @@ CREATE TABLE `carreras` (
 --
 
 INSERT INTO `carreras` (`id_carrera`, `nombre_carrera`, `descripcion`, `estado`, `fecha_creacion`) VALUES
-(1, 'MEDICINA', 'Carrera de Medicina Humana - 7 años', 'INACTIVO', '2026-09-02 22:25:07'),
-(2, 'INGENIERIA CIVIL', 'Carrera de Ingeniería Civil - 5 años', 'INACTIVO', '2026-09-02 22:25:07'),
-(3, 'ADMINISTRACION', 'Carrera de Administración de Empresas - 5 años', 'INACTIVO', '2026-09-02 22:25:07'),
-(4, 'DERECHO', 'Carrera de Derecho - 5 años', 'INACTIVO', '2026-09-02 22:25:07'),
-(5, 'PSICOLOGIA', 'Carrera de Psicología - 5 años', 'INACTIVO', '2026-09-02 22:25:07'),
-(6, 'INGENIERIA SISTEMAS', 'Carrera de Ingeniería de Sistemas - 5 años', 'INACTIVO', '2026-09-02 22:25:07'),
-(7, 'ARQUITECTURA', 'Carrera de Arquitectura - 6 años', 'INACTIVO', '2026-09-02 22:25:07'),
-(8, 'ENFERMERIA', 'Carrera de Enfermería - 5 años', 'INACTIVO', '2026-09-02 22:25:07'),
-(9, 'ODONTOLOGIA', 'Carrera de Odontología - 6 años', 'INACTIVO', '2026-09-02 22:25:07'),
-(10, 'CONTABILIDAD', 'Carrera de Contabilidad - 5 años', 'INACTIVO', '2026-09-02 22:25:07'),
-(11, 'Ingeniería de Sistemas', 'Carrera profesional', 'ACTIVO', '2026-09-02 22:48:33'),
-(12, 'Ingeniería Electrónica y Telecomunicaciones', 'Carrera profesional', 'ACTIVO', '2026-09-02 22:48:33'),
-(13, 'Ingeniería Mecánica y Eléctrica', 'Carrera profesional', 'ACTIVO', '2026-09-02 22:48:33'),
-(14, 'Ingeniería Ambiental', 'Carrera profesional', 'ACTIVO', '2026-09-02 22:48:33'),
-(15, 'Administración de Empresas', 'Carrera profesional', 'ACTIVO', '2026-09-02 22:48:33'),
-(16, 'Ingeniería de Software', 'Carrera profesional', 'ACTIVO', '2026-09-02 22:48:33'),
-(17, 'Ingeniería de Ciencia de Datos e Inteligencia Artificial', 'Carrera profesional', 'ACTIVO', '2026-09-02 22:48:33'),
-(18, 'Ingeniería Mecatrónica', 'Carrera profesional', 'ACTIVO', '2026-09-02 22:48:33'),
-(19, 'Ingeniería Industrial', 'Carrera profesional', 'ACTIVO', '2026-09-02 22:48:33'),
-(20, 'Marketing y Negocios Internacionales', 'Carrera profesional', 'ACTIVO', '2026-09-02 22:48:33');
+(1, 'Ingeniería de Sistemas', 'Carrera profesional', 'ACTIVO', '2026-09-02 22:48:33'),
+(2, 'Ingeniería Electrónica y Telecomunicaciones', 'Carrera profesional', 'ACTIVO', '2026-09-02 22:48:33'),
+(3, 'Ingeniería Mecánica y Eléctrica', 'Carrera profesional', 'ACTIVO', '2026-09-02 22:48:33'),
+(4, 'Ingeniería Ambiental', 'Carrera profesional', 'ACTIVO', '2026-09-02 22:48:33'),
+(5, 'Administración de Empresas', 'Carrera profesional', 'ACTIVO', '2026-09-02 22:48:33'),
+(6, 'Ingeniería de Software', 'Carrera profesional', 'ACTIVO', '2026-09-02 22:48:33'),
+(7, 'Ingeniería de Ciencia de Datos e Inteligencia Artificial', 'Carrera profesional', 'ACTIVO', '2026-09-02 22:48:33'),
+(8, 'Ingeniería Mecatrónica', 'Carrera profesional', 'ACTIVO', '2026-09-02 22:48:33'),
+(9, 'Ingeniería Industrial', 'Carrera profesional', 'ACTIVO', '2026-09-02 22:48:33'),
+(10, 'Marketing y Negocios Internacionales', 'Carrera profesional', 'ACTIVO', '2026-09-02 22:48:33');
 
 -- --------------------------------------------------------
 
@@ -275,8 +256,8 @@ CREATE TABLE `condiciones_matricula` (
 --
 
 INSERT INTO `condiciones_matricula` (`id`, `nombre`) VALUES
-(2, 'EXTRAORDINARIO'),
-(1, 'ORDINARIO');
+(2, 'Solo Preparación (Sin ingreso directo)'),
+(1, 'Con derecho a vacante (Ingreso Directo)');
 
 -- --------------------------------------------------------
 
@@ -372,11 +353,6 @@ CREATE TABLE `estudiantes` (
 -- Volcado de datos para la tabla `estudiantes`
 --
 
-INSERT INTO `estudiantes` (`id_estudiante`, `numero_matricula`, `codigo_estudiante`, `apellido_paterno`, `apellido_materno`, `nombres`, `tipo_documento`, `numero_documento`, `sexo`, `fecha_nacimiento`, `email`, `telefono_casa`, `telefono_celular`, `departamento_actual`, `provincia_actual`, `distrito_actual`, `direccion_actual`, `pais_nacimiento`, `departamento_nacimiento`, `provincia_nacimiento`, `distrito_nacimiento`, `anio_concluye_secundaria`, `institucion_educativa`, `preparacion_anterior`, `mencion`, `carrera_postula`, `tiene_enfermedad`, `tratamiento`, `nombre_apoderado`, `telefono_apoderado`, `como_se_entero`, `modalidad`, `condicion`, `turno`, `estado`, `fecha_registro`, `fecha_actualizacion`) VALUES
-(5, '00001', NULL, 'Monge', 'Peralta', 'Luis', 'DNI', '71017875', 'MASCULINO', '2002-04-18', 'ronalmonge27@gmail.com', '0145895623', '987654321', 'Lima', 'Lima', '3959', 'ronalmonge', 'Perú', 'Lima', 'Lima', '3959', '2018', 'ADUNI', NULL, 'cepre', 'Ingeniería de Sistemas', 0, NULL, NULL, NULL, NULL, 'REGULAR', 'ORDINARIO', 'MANANA', 'ACTIVO', '2026-09-02 23:25:38', '2026-09-03 02:02:36'),
-(10, '00002', '260100002', 'Lopez', 'Alvarez', 'Alfonso', 'DNI', '71017872', 'MASCULINO', '2004-06-15', 'ronalmonge45@gmail.com', NULL, '984748386', 'Lima', 'Lima', '3928', 'Av. Tusilagos', 'Perú', 'Lima', 'Lima', '3928', '2018', 'Innova School', NULL, 'ADUNI', 'Administración de Empresas', 0, NULL, NULL, NULL, NULL, 'REGULAR', 'ORDINARIO', 'MANANA', 'ACTIVO', '2026-09-03 02:50:40', '2026-09-03 02:53:31'),
-(11, '00003', '260100003', 'Huacho', 'Huamani', 'Jeremy Mathías', 'DNI', '71002593', 'MASCULINO', '2005-04-11', 'jeremy@gmail.com', NULL, '963258741', 'Lima', 'Lima', '3940', 'Av. Jesus María 123', 'Perú', 'Lima', 'Lima', '3940', '2018', 'daniel alomia robles', 'ACADEMIA', 'cesar vallejo', 'Ingeniería Industrial', 0, NULL, NULL, NULL, NULL, 'REGULAR', 'ORDINARIO', 'MANANA', 'ACTIVO', '2026-09-03 03:52:43', '2026-09-03 03:52:43'),
-(12, '00004', '270100004', 'YAYA', 'PORTUGAL', 'JULIO CESAR', 'DNI', '09668752', 'MASCULINO', '2000-05-11', 'ronal@gmail.com', NULL, '963258742', 'Lima', 'Lima', '3939', 'Av. Jesus María 123', 'Perú', 'Lima', 'Lima', '3928', '2016', 'daniel alomia robles', 'ACADEMIA', 'cesar vallejo', 'Ingeniería Mecánica y Eléctrica', 0, NULL, NULL, NULL, NULL, 'REGULAR', 'ORDINARIO', 'MANANA', 'ACTIVO', '2026-09-03 13:28:13', '2026-09-03 13:28:13');
 
 -- --------------------------------------------------------
 
@@ -414,12 +390,6 @@ CREATE TABLE `informacion_academica` (
 -- Volcado de datos para la tabla `informacion_academica`
 --
 
-INSERT INTO `informacion_academica` (`id`, `matricula_id`, `anio_conclusion_secundaria`, `pais`, `departamento_ubigeo`, `provincia_ubigeo`, `distrito_ubigeo`, `sector_id`, `especificar_sector`, `nombre_institucion`, `nombre_institucion_extranjera`, `preparacion_previa_id`, `mencion`, `tiene_discapacidad`, `tipo_discapacidad`, `otro_tipo_discapacidad`, `grado_discapacidad`, `necesidades_especiales`, `tiene_certificado_discapacidad`, `como_se_entero_cepre`) VALUES
-(2, 2, '2018', 'Perú', NULL, NULL, NULL, NULL, 'Publico', 'ADUNI', NULL, NULL, 'cepre', 0, NULL, NULL, NULL, NULL, 0, 'sitio_web'),
-(7, 7, '2018', 'Perú', '15', NULL, NULL, NULL, 'Privado', 'Innova School', NULL, NULL, 'ADUNI', 0, NULL, NULL, NULL, NULL, 0, NULL),
-(8, 8, '2018', 'Perú', '15', NULL, NULL, 1, 'publico', 'daniel alomia robles', NULL, 1, 'cesar vallejo', 0, NULL, NULL, NULL, NULL, 0, NULL),
-(9, 9, '2016', 'Perú', '15', NULL, NULL, 1, NULL, 'daniel alomia robles', NULL, 1, 'cesar vallejo', 0, NULL, NULL, NULL, NULL, 0, NULL);
-
 -- --------------------------------------------------------
 
 --
@@ -443,12 +413,6 @@ CREATE TABLE `matriculas` (
 --
 -- Volcado de datos para la tabla `matriculas`
 --
-
-INSERT INTO `matriculas` (`id`, `numero`, `estudiante_id`, `periodo_id`, `condicion_id`, `turno_id`, `modalidad_clase_id`, `carrera_id`, `estado`, `fecha_registro`, `observaciones`) VALUES
-(2, '00001', 5, 1, 1, 1, 1, 11, 'CONFIRMADA', '2026-09-02 18:25:38', NULL),
-(7, '00002', 10, 1, 1, 1, 1, 15, 'CONFIRMADA', '2026-09-02 21:50:40', NULL),
-(8, '00003', 11, 1, 1, 1, 1, 19, 'CONFIRMADA', '2026-09-02 22:52:43', NULL),
-(9, '00004', 12, 5, 1, 1, 1, 13, 'CONFIRMADA', '2026-09-03 08:28:13', NULL);
 
 -- --------------------------------------------------------
 
@@ -882,7 +846,7 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `archivos_matricula`
 --
 ALTER TABLE `archivos_matricula`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `auditoria`
@@ -894,7 +858,7 @@ ALTER TABLE `auditoria`
 -- AUTO_INCREMENT de la tabla `carreras`
 --
 ALTER TABLE `carreras`
-  MODIFY `id_carrera` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id_carrera` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT de la tabla `condiciones_matricula`
@@ -918,19 +882,19 @@ ALTER TABLE `domicilios`
 -- AUTO_INCREMENT de la tabla `estudiantes`
 --
 ALTER TABLE `estudiantes`
-  MODIFY `id_estudiante` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id_estudiante` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `informacion_academica`
 --
 ALTER TABLE `informacion_academica`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `matriculas`
 --
 ALTER TABLE `matriculas`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `modalidades_clase`

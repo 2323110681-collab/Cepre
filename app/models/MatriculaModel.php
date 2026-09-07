@@ -29,10 +29,10 @@ final class MatriculaModel
 
         return [
             'carreras' => $this->connection->query("SELECT id_carrera AS id, nombre_carrera AS nombre FROM carreras WHERE estado = 'ACTIVO' ORDER BY nombre_carrera")->fetchAll(),
-            'condiciones' => $this->connection->query('SELECT id, nombre FROM condiciones_matricula ORDER BY id')->fetchAll(),
+            'condiciones' => $this->connection->query("SELECT id, CASE id WHEN 1 THEN 'Con derecho a vacante (Ingreso Directo)' WHEN 2 THEN 'Solo Preparación (Sin ingreso directo)' END AS nombre FROM condiciones_matricula WHERE id IN (1, 2) ORDER BY id")->fetchAll(),
             'turnos' => $this->connection->query("SELECT id, CASE nombre WHEN 'MANANA' THEN 'Turno Mañana: 8:00 a.m. a 1:30 p.m.' WHEN 'TARDE' THEN 'Turno Tarde: 2:30 p.m. a 8:00 p.m.' WHEN 'ESCOLAR' THEN 'Turno Escolar: lunes a viernes 7:00 p.m. a 9:40 p.m. y sábado 8:00 a.m. a 1:20 p.m.' END AS nombre FROM turnos WHERE nombre IN ('MANANA', 'TARDE', 'ESCOLAR') ORDER BY id")->fetchAll(),
             'periodos' => $this->connection->query('SELECT id, nombre FROM periodos ORDER BY fecha_inicio, id')->fetchAll(),
-            'modalidades' => $this->connection->query('SELECT id, nombre FROM modalidades_clase ORDER BY id')->fetchAll(),
+            'modalidades' => $this->connection->query("SELECT id, nombre FROM modalidades_clase WHERE UPPER(TRIM(nombre)) = 'VIRTUAL' ORDER BY id")->fetchAll(),
             'sectores' => $this->connection->query('SELECT id, nombre FROM sectores ORDER BY id')->fetchAll(),
             'preparaciones' => $this->connection->query('SELECT id, nombre FROM preparaciones_previas ORDER BY id')->fetchAll(),
             'departamentos' => $this->connection->query("SELECT TRIM(codigo) AS codigo, nombre FROM ubigeos WHERE nivel = 'DEPARTAMENTO' ORDER BY nombre")->fetchAll(),
@@ -303,6 +303,12 @@ final class MatriculaModel
         if (!filter_var($data['correo'], FILTER_VALIDATE_EMAIL)) {
             throw new InvalidArgumentException('El correo electrónico no es válido.');
         }
+        $conditionId = (int) ($data['condicion_id'] ?? 0);
+        $virtualStatement = $this->connection->query("SELECT id FROM modalidades_clase WHERE UPPER(TRIM(nombre)) = 'VIRTUAL' LIMIT 1");
+        $virtualId = (int) $virtualStatement->fetchColumn();
+        if (!in_array($conditionId, [1, 2], true) || $virtualId < 1 || (int) ($data['modalidad_clase_id'] ?? 0) !== $virtualId) {
+            throw new InvalidArgumentException('Seleccione una modalidad de ingreso y modalidad de clase válidas.');
+        }
         $this->connection->beginTransaction();
         try {
             $lookup = $this->connection->prepare('SELECT estudiante_id FROM matriculas WHERE id = :id AND estado <> "ANULADA"');
@@ -437,7 +443,7 @@ final class MatriculaModel
                 'preparacion_anterior' => $this->catalogName('preparaciones_previas', $data['preparacion_previa_id'] ?? 0),
                 'mencion' => trim((string) ($data['mencion'] ?? '')) ?: null,
                 'carrera_postula' => $carrera,
-                'condicion' => $this->catalogName('condiciones_matricula', $data['condicion_id'] ?? 0),
+                'condicion' => $this->conditionName($data['condicion_id'] ?? 0),
                 'turno' => $this->catalogName('turnos', $data['turno_id'] ?? 0),
             ]);
             $estudianteId = (int) $this->connection->lastInsertId();
@@ -544,7 +550,13 @@ final class MatriculaModel
         if (($data['pais_nacimiento'] ?? 'Perú') === 'Otro' && trim((string) ($data['pais_nacimiento_otro'] ?? '')) === '') {
             throw new InvalidArgumentException('Indique el país de nacimiento.');
         }
-        foreach (['condicion_id', 'turno_id', 'modalidad_clase_id', 'carrera_id'] as $field) {
+        $conditionId = (int) ($data['condicion_id'] ?? 0);
+        $virtualStatement = $this->connection->query("SELECT id FROM modalidades_clase WHERE UPPER(TRIM(nombre)) = 'VIRTUAL' LIMIT 1");
+        $virtualId = (int) $virtualStatement->fetchColumn();
+        if (!in_array($conditionId, [1, 2], true) || $virtualId < 1 || (int) ($data['modalidad_clase_id'] ?? 0) !== $virtualId) {
+            throw new InvalidArgumentException('Seleccione una modalidad de ingreso y modalidad de clase válidas.');
+        }
+        foreach (['turno_id', 'carrera_id'] as $field) {
             if (!filter_var($data[$field] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]])) {
                 throw new InvalidArgumentException('Seleccione opciones válidas de matrícula.');
             }
@@ -710,6 +722,20 @@ final class MatriculaModel
             throw new RuntimeException('Seleccione una condición y un turno válidos.');
         }
         return (string) $name;
+    }
+
+    private function conditionName(mixed $id): string
+    {
+        $names = [
+            1 => 'Con derecho a vacante (Ingreso Directo)',
+            2 => 'Solo Preparación (Sin ingreso directo)',
+        ];
+        $conditionId = (int) $id;
+        if (!isset($names[$conditionId])) {
+            throw new RuntimeException('Seleccione una modalidad de ingreso válida.');
+        }
+
+        return $names[$conditionId];
     }
 
     private function ubigeoOrNull(mixed $value): ?string

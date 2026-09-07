@@ -57,9 +57,14 @@ $usuarioActual = currentUser();
                             <?php endforeach; ?>
                         </select>
                     </div>
-                    <?php if (!empty($catalogos['condiciones'])): ?>
-                        <input type="hidden" name="condicion_id" value="<?= (int) $catalogos['condiciones'][0]['id'] ?>">
-                    <?php endif; ?>
+                    <div class="field">
+                        <label for="modalidad-ingreso">Modalidad de ingreso</label>
+                        <select id="modalidad-ingreso" name="condicion_id" required>
+                            <?php foreach ($catalogos['condiciones'] as $item): ?>
+                                <option value="<?= (int) $item['id'] ?>"><?= htmlspecialchars($item['nombre'], ENT_QUOTES, 'UTF-8') ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
                     <div class="upload-row">
                         <label for="foto">Foto Carnet</label>
                         <input id="foto" name="foto" type="file" accept="image/jpeg,image/png" required>
