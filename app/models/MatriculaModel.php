@@ -522,7 +522,7 @@ final class MatriculaModel
                 throw new InvalidArgumentException('Complete todos los campos obligatorios.');
             }
         }
-        if (!preg_match('/^\d{4}-(?:[12]|I|II)$/', (string) ($data['semestre'] ?? ''))) {
+        if (!preg_match('/^\d{4}-(?:I|II)$/', (string) ($data['semestre'] ?? ''))) {
             throw new InvalidArgumentException('El semestre seleccionado no es válido.');
         }
         if (!filter_var($data['correo'], FILTER_VALIDATE_EMAIL)) {

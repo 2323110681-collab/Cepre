@@ -33,8 +33,8 @@ final class MatriculaController
             foreach ($catalogos['turnos'] as $turno) {
                 if (stripos((string) $turno['nombre'], 'Escolar') !== false) $turnoEscolarId = (int) $turno['id'];
             }
-            $codigoCepreRegular = $model->siguienteCodigoCepre($turnoRegularId, '2027-1');
-            $codigoCepreEscolar = $model->siguienteCodigoCepre($turnoEscolarId, '2027-1');
+            $codigoCepreRegular = $model->siguienteCodigoCepre($turnoRegularId, '2027-I');
+            $codigoCepreEscolar = $model->siguienteCodigoCepre($turnoEscolarId, '2027-I');
             $codigoCepre = $codigoCepreRegular;
         } catch (Throwable $exception) {
             $databaseReady = false;

@@ -34,7 +34,7 @@ $usuarioActual = currentUser();
         <div class="page-heading">
             <p class="eyebrow">Registro de estudiante</p>
             <h1 id="titulo-ficha" data-numero-ficha="<?= htmlspecialchars($numeroMatricula, ENT_QUOTES, 'UTF-8') ?>">FICHA DE MATRÍCULA N.° <?= htmlspecialchars($numeroMatricula) ?></h1>
-            <p class="enrollment-period">Periodo de matrícula: <strong>2027-1</strong></p>
+            <p class="enrollment-period">Periodo de matrícula: <strong>2027-I</strong></p>
         </div>
 
         <?php if (!$databaseReady): ?>
@@ -53,7 +53,7 @@ $usuarioActual = currentUser();
                         <label for="semestre">Semestre</label>
                         <select id="semestre" name="semestre" required>
                             <?php foreach ($catalogos['periodos'] as $periodo): ?>
-                                <option value="<?= htmlspecialchars($periodo['nombre'], ENT_QUOTES, 'UTF-8') ?>" <?= $periodo['nombre'] === '2027-1' ? 'selected' : '' ?>><?= htmlspecialchars($periodo['nombre']) ?></option>
+                                <option value="<?= htmlspecialchars($periodo['nombre'], ENT_QUOTES, 'UTF-8') ?>" <?= $periodo['nombre'] === '2027-I' ? 'selected' : '' ?>><?= htmlspecialchars($periodo['nombre']) ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>

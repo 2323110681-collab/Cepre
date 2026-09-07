@@ -323,6 +323,7 @@ CREATE TABLE `estudiantes` (
   `email` varchar(100) NOT NULL,
   `telefono_casa` varchar(15) DEFAULT NULL,
   `telefono_celular` varchar(15) NOT NULL,
+  `pais_actual` varchar(50) DEFAULT NULL,
   `departamento_actual` varchar(50) DEFAULT NULL,
   `provincia_actual` varchar(50) DEFAULT NULL,
   `distrito_actual` varchar(50) DEFAULT NULL,
@@ -457,11 +458,7 @@ INSERT INTO `periodos` (`id`, `nombre`, `fecha_inicio`, `fecha_fin`, `activo`) V
 (5, '2027-I', '2027-01-01', '2027-07-31', 1),
 (6, '2027-II', '2027-08-01', '2027-12-31', 1),
 (7, '2028-I', '2028-01-01', '2028-07-31', 1),
-(8, '2028-II', '2028-08-01', '2028-12-31', 1),
-(9, '2027-1', '2026-08-01', '2027-02-28', 1),
-(10, '2027-2', '2027-03-01', '2027-07-31', 1),
-(11, '2028-1', '2027-08-01', '2027-12-31', 1),
-(12, '2028-2', '2028-01-01', '2028-07-31', 1);
+(8, '2028-II', '2028-08-01', '2028-12-31', 1);
 
 -- --------------------------------------------------------
 
