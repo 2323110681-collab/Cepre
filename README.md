@@ -33,6 +33,7 @@ Sistema web para registrar y consultar matrículas del Centro Preuniversitario d
 
 No se debe volver a importar el SQL sobre una base que ya contiene matrículas sin realizar antes una copia de seguridad.
 
+
 ## Acceso
 
 El sistema tiene dos entradas:
@@ -67,6 +68,33 @@ La pantalla principal permite registrar:
 - Cómo se enteró de la CEPRE UNTELS.
 
 El DNI puede consultarse mediante `public/api/dni.php` si la configuración de RENIEC está disponible.
+
+### Formulario de contacto
+
+`public/contacto.php` permite registrar consultas de postulantes. El formulario:
+
+- Valida nombre, correo, teléfono y mensaje en el servidor.
+- Verifica el token CSRF.
+- Valida reCAPTCHA v2 antes de guardar la consulta.
+- Guarda los datos en la tabla `consultas_contacto` con estado `PENDIENTE`.
+- Muestra una confirmación con SweetAlert2 después de guardar correctamente.
+
+Para una base existente, crea la tabla ejecutando:
+
+```sql
+CREATE TABLE IF NOT EXISTS consultas_contacto (
+  id INT NOT NULL AUTO_INCREMENT,
+  nombre VARCHAR(150) NOT NULL,
+  correo VARCHAR(150) NOT NULL,
+  telefono VARCHAR(40) NOT NULL,
+  mensaje TEXT NOT NULL,
+  estado VARCHAR(20) NOT NULL DEFAULT 'PENDIENTE',
+  fecha_registro TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  KEY idx_consultas_contacto_estado (estado),
+  KEY idx_consultas_contacto_fecha (fecha_registro)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+```
 
 ### Campos condicionales
 
@@ -126,6 +154,7 @@ app/
 config/
   auth.php           Sesiones, autenticación y CSRF.
   database.php       Conexión PDO a MySQL.
+  recaptcha.php      Claves y validación de Google reCAPTCHA v2.
   reniec.php         Configuración de consulta de DNI.
 database/
   cepre_universidad.sql
@@ -135,10 +164,11 @@ public/
   login.php          Inicio de sesión.
   fichas.php         Consulta de estudiantes.
   editar.php         Edición de fichas.
+  contacto.php       Formulario público de consultas.
   reportes.php       Reportes estadísticos.
   api/               Endpoints JSON.
   css/               Estilos.
-  js/                Comportamiento del formulario.
+  js/                Comportamiento de los formularios públicos y de matrícula.
 ```
 
 ## Flujo de una matrícula
@@ -170,6 +200,8 @@ Las tablas más importantes son `estudiantes`, `matriculas`, `informacion_academ
 - **No aparecen cambios visuales:** usar `Ctrl + F5` para limpiar la caché del navegador.
 - **No permite guardar discapacidad:** seleccionar tipo y grado, completar necesidades especiales y, si corresponde, especificar el tipo “Otra”.
 - **No aparece el reporte:** iniciar sesión y acceder a `public/reportes.php`.
+- **reCAPTCHA muestra “Invalid site key”:** comprobar que la clave sea de reCAPTCHA v2 Checkbox y que `localhost` esté registrado como dominio autorizado en Google.
+- **El contacto no se guarda:** comprobar que exista la tabla `consultas_contacto`, que MySQL esté activo y que el reCAPTCHA se haya validado correctamente.
 - **No importar nuevamente el SQL:** si la base ya tiene datos, hacer una exportación desde phpMyAdmin antes de modificar el esquema.
 
 ## Desarrollo
