@@ -262,6 +262,31 @@ foreach ($catalogos['periodos'] as $periodo) {
       </table>
     <?php endif; ?>
   </section>
+  <section class="table-container">
+    <div class="table-head">
+      <h2 class="table-title">Detalle de pagos</h2>
+      <p class="table-subtitle">Medio de pago y código de voucher de las matrículas filtradas.</p>
+    </div>
+    <?php if ($reportes['estudiantes'] === []): ?>
+      <p class="empty">No hay registros para los filtros seleccionados.</p>
+    <?php else: ?>
+      <table>
+        <thead><tr><th>Matrícula</th><th>Código CEPRE</th><th>Estudiante</th><th>Medio de pago</th><th>Código de voucher</th><th>Fecha</th></tr></thead>
+        <tbody>
+          <?php foreach ($reportes['estudiantes'] as $row): ?>
+            <tr>
+              <td><?= reportLabel($row['numero']) ?></td>
+              <td><?= reportLabel($row['codigo_estudiante']) ?></td>
+              <td><?= reportLabel($row['estudiante']) ?></td>
+              <td><?= reportLabel($row['medio_pago']) ?></td>
+              <td><?= reportLabel($row['codigo_voucher']) ?></td>
+              <td><?= reportLabel($row['fecha_registro']) ?></td>
+            </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+    <?php endif; ?>
+  </section>
 </main>
 <?php require __DIR__ . '/../app/views/partials/site-footer.php'; ?>
 </body>

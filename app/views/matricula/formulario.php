@@ -25,10 +25,10 @@ $usuarioActual = currentUser();
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Alatsi&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" href="/cepre_untels/public/css/app.css?v=20260909">
+    <link rel="stylesheet" href="/cepre_untels/public/css/app.css?v=20260917">
 </head>
 <body>
-    <?php require __DIR__ . '/../partials/site-header.php'; ?>
+    <?php $pagina = ''; require __DIR__ . '/../partials/public-header.php'; ?>
 
     <main class="page-shell" id="ficha">
         <div class="page-heading">
@@ -64,6 +64,19 @@ $usuarioActual = currentUser();
                                 <option value="<?= (int) $item['id'] ?>"><?= htmlspecialchars($item['nombre'], ENT_QUOTES, 'UTF-8') ?></option>
                             <?php endforeach; ?>
                         </select>
+                    </div>
+                    <div class="field">
+                        <label for="medio-pago">Medio de pago</label>
+                        <select id="medio-pago" name="medio_pago" required>
+                            <option value="">Seleccione medio de pago</option>
+                            <option value="CAJA_UNTELS">Caja UNTELS</option>
+                            <option value="BANCO_NACION">Banco de la Nación</option>
+                        </select>
+                    </div>
+                    <div class="field" id="codigo-voucher-wrap" hidden>
+                        <label for="codigo-voucher">Código del voucher</label>
+                        <input id="codigo-voucher" name="codigo_voucher" type="text" maxlength="50" autocomplete="off">
+                        <small class="field-status">Ingrese el código consignado en su comprobante.</small>
                     </div>
                     <div class="upload-row">
                         <label for="foto">Foto Carnet</label>
@@ -233,7 +246,7 @@ $usuarioActual = currentUser();
         </form>
     </main>
     <?php require __DIR__ . '/../partials/site-footer.php'; ?>
-    <script src="/cepre_untels/public/js/app.js?v=20260916"></script>
+    <script src="/cepre_untels/public/js/app.js?v=20260917"></script>
     <?php if ($registroExitoso && $numeroRegistrado !== null): ?>
         <script>
             window.history.replaceState({}, document.title, window.location.pathname);

@@ -6,6 +6,20 @@ document.addEventListener('DOMContentLoaded', () => {
         declaracion_jurada: document.querySelector('.preview--declaracion_jurada')
     };
 
+    const paymentMethod = document.getElementById('medio-pago');
+    const voucherWrap = document.getElementById('codigo-voucher-wrap');
+    const voucherInput = document.getElementById('codigo-voucher');
+    const updateVoucherVisibility = () => {
+        const requiresVoucher = ['CAJA_UNTELS', 'BANCO_NACION'].includes(paymentMethod?.value);
+        if (voucherWrap) voucherWrap.hidden = !requiresVoucher;
+        if (voucherInput) {
+            voucherInput.required = requiresVoucher;
+            if (!requiresVoucher) voucherInput.value = '';
+        }
+    };
+    paymentMethod?.addEventListener('change', updateVoucherVisibility);
+    updateVoucherVisibility();
+
     document.querySelectorAll('input[type="file"]').forEach((input) => {
         input.addEventListener('change', () => {
             const file = input.files[0];
@@ -551,6 +565,8 @@ function toggleForeignLocationSet(config) {
     const city = document.getElementById(config.cityId);
     const isPeru = country?.value === 'Perú';
 
+    const foreignFieldsVisible = !isPeru;
+
     config.peruIds.forEach((id, index) => {
         const select = document.getElementById(id);
         if (!select) return;
@@ -571,7 +587,10 @@ function toggleForeignLocationSet(config) {
 
     ['countryWrapId', 'stateWrapId', 'cityWrapId'].forEach((key) => {
         const wrapper = document.getElementById(config[key]);
-        if (wrapper) wrapper.hidden = isPeru;
+        if (wrapper) {
+            wrapper.hidden = !foreignFieldsVisible;
+            wrapper.style.display = foreignFieldsVisible ? '' : 'none';
+        }
     });
     foreignCountry.disabled = isPeru;
     state.disabled = isPeru || !foreignCountry.value;

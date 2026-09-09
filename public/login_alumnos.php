@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../config/auth.php';
 
+header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+header('Pragma: no-cache');
+
 startSession();
-if (isAuthenticated() && isStudent()) {
-    header('Location: /cepre_untels/public/');
-    exit();
-}
 
 $errorMessage = null;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -32,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'rol' => 'ALUMNO',
             'dni' => $dni,
         ];
-        header('Location: /cepre_untels/public/');
+        header('Location: /cepre_untels/public/test_index.php');
         exit();
     } else {
         $errorMessage = 'Debe ingresar su número de documento y el número de operación.';
@@ -52,18 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="/cepre_untels/public/css/app.css?v=20260906-student-login">
 </head>
 <body class="student-login-page">
-    <header class="student-header">
-        <a class="brand" href="/cepre_untels/public/login_alumnos.php" aria-label="CEPRE UNTELS inicio">
-            <img class="brand__logo" src="/cepre_untels/public/img/cepre.png" alt="CEPRE UNTELS">
-        </a>
-        <nav class="student-nav">
-            <a href="#">INICIO</a>
-            <a href="#">SOBRE NOSOTROS</a>
-            <a href="#">DOCENTES</a>
-            <a href="#">PÁGINAS</a>
-        </nav>
-    </header>
-
+    <?php $pagina = ''; require __DIR__ . '/../app/views/partials/public-header.php'; ?>
     <main class="student-login-container">
         <div class="student-login-left">
             <h2>Matricula Online</h2>
@@ -88,7 +76,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="field">
                     <input id="operacion" name="operacion" type="text" placeholder="Ingresa tu número de operación o boleta" required>
                 </div>
-
                 <button class="button button--submit btn-enviar" type="submit">Enviar</button>
             </form>
         </div>

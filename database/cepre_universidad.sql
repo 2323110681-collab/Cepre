@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 08-09-2026 a las 06:36:07
+-- Tiempo de generación: 09-09-2026 a las 03:40:55
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -195,7 +195,10 @@ CREATE TABLE `archivos_matricula` (
 INSERT INTO `archivos_matricula` (`id`, `matricula_id`, `tipo_archivo_id`, `nombre_original`, `ruta`, `mime_type`, `tamano_bytes`, `hash_archivo`, `creado_en`) VALUES
 (1, 1, 1, 'Tipografia.jpg', 'C:\\xampp\\htdocs\\cepre_untels\\app\\models/../storage/matriculas/0b3c85ae104d1087dd5c34e37b4a21bb.jpg', 'image/jpeg', 240267, '363ed0eae1d5da6b916f926c35014758a6851b1817b23c94f4922ab4a5b8f958', '2026-09-07 11:38:10'),
 (2, 1, 2, 'Tipografia.pdf', 'C:\\xampp\\htdocs\\cepre_untels\\app\\models/../storage/matriculas/9949910cc11898d302d64ae58e1e3bd6.pdf', 'application/pdf', 95688, 'e629d14d58d716e738abfb0acd6f7364315283449956449ae9b162157b76c78a', '2026-09-07 11:38:10'),
-(3, 1, 7, 'mayores.pdf', 'C:\\xampp\\htdocs\\cepre_untels\\app\\models/../storage/matriculas/9263cbea2ca2fb78d3ba4953440ae7e2.pdf', 'application/pdf', 84418, '63f3c7b53444a7f04a76d3ad898dd8624dad195942109e7b4539c116b8be6986', '2026-09-07 11:38:10');
+(3, 1, 7, 'mayores.pdf', 'C:\\xampp\\htdocs\\cepre_untels\\app\\models/../storage/matriculas/9263cbea2ca2fb78d3ba4953440ae7e2.pdf', 'application/pdf', 84418, '63f3c7b53444a7f04a76d3ad898dd8624dad195942109e7b4539c116b8be6986', '2026-09-07 11:38:10'),
+(4, 2, 1, 'images.jpg', 'C:\\xampp\\htdocs\\cepre_untels\\app\\models/../storage/matriculas/e3ec989cde8155b5c042e847115ce427.jpg', 'image/jpeg', 4475, '0b7b0a7f3414a4ed0cfe6aedaa57e9b596ccdb4e541226574f86b691b91ea6b3', '2026-09-08 19:33:35'),
+(5, 2, 2, '11557950844DJ-Anexo-1-VF.pdf', 'C:\\xampp\\htdocs\\cepre_untels\\app\\models/../storage/matriculas/31ebcfa74ad0dc6b4a82e3d4a05efcc7.pdf', 'application/pdf', 100337, 'a54501e6e848c93ea9fdcd5a0d8e4929c71af7a770ffcd3bedaf91a3f312c3b3', '2026-09-08 19:33:35'),
+(6, 2, 7, '11557950844DJ-Anexo-1-VF.pdf', 'C:\\xampp\\htdocs\\cepre_untels\\app\\models/../storage/matriculas/2be9aa8eeb8ff1b22cfb40d1d2cc4a32.pdf', 'application/pdf', 100337, 'a54501e6e848c93ea9fdcd5a0d8e4929c71af7a770ffcd3bedaf91a3f312c3b3', '2026-09-08 19:33:35');
 
 -- --------------------------------------------------------
 
@@ -296,6 +299,31 @@ INSERT INTO `configuracion_sistema` (`id_config`, `clave`, `valor`, `descripcion
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `consultas_contacto`
+--
+
+CREATE TABLE `consultas_contacto` (
+  `id` int(11) NOT NULL,
+  `nombre` varchar(150) NOT NULL,
+  `correo` varchar(150) NOT NULL,
+  `telefono` varchar(40) NOT NULL,
+  `mensaje` text NOT NULL,
+  `estado` varchar(20) NOT NULL DEFAULT 'PENDIENTE',
+  `fecha_registro` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `consultas_contacto`
+--
+
+INSERT INTO `consultas_contacto` (`id`, `nombre`, `correo`, `telefono`, `mensaje`, `estado`, `fecha_registro`) VALUES
+(1, 'Prueba Contacto 2', 'prueba.contacto2@example.com', '999111223', 'Mensaje de prueba guardado en base de datos', 'PENDIENTE', '2026-09-09 01:08:26'),
+(2, 'Juan Pérez', 'juan.perez@email.com', '987654321', 'Consulta sobre los ciclos académicos', 'PENDIENTE', '2026-09-09 01:14:26'),
+(3, 'JOrge', 'a@gmail.com', '987654321', 'aaaaaaa', 'PENDIENTE', '2026-09-09 01:38:13');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `domicilios`
 --
 
@@ -360,7 +388,8 @@ CREATE TABLE `estudiantes` (
 --
 
 INSERT INTO `estudiantes` (`id_estudiante`, `numero_matricula`, `codigo_estudiante`, `apellido_paterno`, `apellido_materno`, `nombres`, `tipo_documento`, `numero_documento`, `sexo`, `fecha_nacimiento`, `email`, `telefono_casa`, `telefono_celular`, `pais_actual`, `departamento_actual`, `provincia_actual`, `distrito_actual`, `direccion_actual`, `pais_nacimiento`, `departamento_nacimiento`, `provincia_nacimiento`, `distrito_nacimiento`, `anio_concluye_secundaria`, `institucion_educativa`, `preparacion_anterior`, `mencion`, `carrera_postula`, `tiene_enfermedad`, `tratamiento`, `nombre_apoderado`, `telefono_apoderado`, `como_se_entero`, `modalidad`, `condicion`, `turno`, `estado`, `fecha_registro`, `fecha_actualizacion`) VALUES
-(1, '00001', '10001', 'GONZALES', 'Monge', 'Luis', 'DNI', '47582563', 'MASCULINO', '2004-06-12', 'gonzales@gmail.com', NULL, '984748385', 'Perú', 'Lima', 'Lima', '3928', NULL, 'Perú', 'Lima', 'Lima', '3928', NULL, 'Innova School', 'ACADEMIA', 'ADUNI', 'Ingeniería Mecatrónica', 0, NULL, NULL, NULL, NULL, 'REGULAR', '', 'MANANA', 'ACTIVO', '2026-09-07 16:38:10', '2026-09-07 16:38:10');
+(1, '00001', '10001', 'GONZALES', 'Monge', 'Luis', 'DNI', '47582563', 'MASCULINO', '2004-06-12', 'gonzales@gmail.com', NULL, '984748385', 'Perú', 'Lima', 'Lima', '3928', NULL, 'Perú', 'Lima', 'Lima', '3928', NULL, 'Innova School', 'ACADEMIA', 'ADUNI', 'Ingeniería Mecatrónica', 0, NULL, NULL, NULL, NULL, 'REGULAR', '', 'MANANA', 'ACTIVO', '2026-09-07 16:38:10', '2026-09-07 16:38:10'),
+(2, '00002', '10002', 'GONZALES', 'BARBARAN', 'FELICITA', 'DNI', '09668423', 'MASCULINO', '2005-02-12', 'a@gmail.com', NULL, '987456213', 'Perú', 'Lima', 'Lima', '3928', NULL, 'Perú', 'Lima', 'Lima', '3928', '2019', 'inova school', 'ACADEMIA', 'aduni', 'Ingeniería de Sistemas', 0, NULL, NULL, NULL, NULL, 'REGULAR', '', 'MANANA', 'ACTIVO', '2026-09-09 00:33:35', '2026-09-09 00:33:35');
 
 -- --------------------------------------------------------
 
@@ -399,7 +428,8 @@ CREATE TABLE `informacion_academica` (
 --
 
 INSERT INTO `informacion_academica` (`id`, `matricula_id`, `anio_conclusion_secundaria`, `pais`, `departamento_ubigeo`, `provincia_ubigeo`, `distrito_ubigeo`, `departamento_extranjero`, `provincia_extranjera`, `distrito_extranjero`, `sector_id`, `especificar_sector`, `nombre_institucion`, `nombre_institucion_extranjera`, `preparacion_previa_id`, `mencion`, `tiene_discapacidad`, `tipo_discapacidad`, `otro_tipo_discapacidad`, `grado_discapacidad`, `necesidades_especiales`, `tiene_certificado_discapacidad`, `como_se_entero_cepre`) VALUES
-(1, 1, '2026', 'Perú', '15', NULL, NULL, NULL, NULL, NULL, 1, 'Publico', 'Innova School', NULL, 1, 'ADUNI', 0, NULL, NULL, NULL, NULL, 0, 'whatsapp');
+(1, 1, '2026', 'Perú', '15', NULL, NULL, NULL, NULL, NULL, 1, 'Publico', 'Innova School', NULL, 1, 'ADUNI', 0, NULL, NULL, NULL, NULL, 0, 'whatsapp'),
+(2, 2, '2019', 'Perú', '15', NULL, NULL, NULL, NULL, NULL, 1, 'publico', 'inova school', NULL, 1, 'aduni', 0, NULL, NULL, NULL, NULL, 0, 'amigo_familiar');
 
 -- --------------------------------------------------------
 
@@ -416,6 +446,8 @@ CREATE TABLE `matriculas` (
   `turno_id` tinyint(3) UNSIGNED NOT NULL,
   `modalidad_clase_id` tinyint(3) UNSIGNED NOT NULL,
   `carrera_id` int(11) NOT NULL,
+  `medio_pago` varchar(30) DEFAULT NULL,
+  `codigo_voucher` varchar(50) DEFAULT NULL,
   `estado` enum('BORRADOR','PENDIENTE','OBSERVADA','CONFIRMADA','ANULADA') NOT NULL DEFAULT 'BORRADOR',
   `fecha_registro` datetime NOT NULL DEFAULT current_timestamp(),
   `observaciones` varchar(500) DEFAULT NULL
@@ -425,8 +457,9 @@ CREATE TABLE `matriculas` (
 -- Volcado de datos para la tabla `matriculas`
 --
 
-INSERT INTO `matriculas` (`id`, `numero`, `estudiante_id`, `periodo_id`, `condicion_id`, `turno_id`, `modalidad_clase_id`, `carrera_id`, `estado`, `fecha_registro`, `observaciones`) VALUES
-(1, '00001', 1, 5, 1, 1, 2, 8, 'CONFIRMADA', '2026-09-07 11:38:10', NULL);
+INSERT INTO `matriculas` (`id`, `numero`, `estudiante_id`, `periodo_id`, `condicion_id`, `turno_id`, `modalidad_clase_id`, `carrera_id`, `medio_pago`, `codigo_voucher`, `estado`, `fecha_registro`, `observaciones`) VALUES
+(1, '00001', 1, 5, 1, 1, 2, 8, NULL, NULL, 'CONFIRMADA', '2026-09-07 11:38:10', NULL),
+(2, '00002', 2, 5, 1, 1, 2, 1, 'CAJA_UNTELS', '12as', 'CONFIRMADA', '2026-09-08 19:33:35', NULL);
 
 -- --------------------------------------------------------
 
@@ -638,7 +671,7 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id_usuario`, `nombre_usuario`, `email`, `contrasena_hash`, `nombre_completo`, `rol`, `estado`, `ultimo_acceso`, `fecha_creacion`) VALUES
-(1, 'admin', 'admin@cepre.com', '$2y$12$ItVj5aQ0tVZAwNJCgzQqM.4NV2xew8PwPDJMtx4WpO6DZAGVrcSX2', 'Administrador del Sistema', 'ADMIN', 'ACTIVO', '2026-09-04 21:00:34', '2026-09-02 22:25:07'),
+(1, 'admin', 'admin@cepre.com', '$2y$12$ItVj5aQ0tVZAwNJCgzQqM.4NV2xew8PwPDJMtx4WpO6DZAGVrcSX2', 'Administrador del Sistema', 'ADMIN', 'ACTIVO', '2026-09-08 23:37:23', '2026-09-02 22:25:07'),
 (2, 'secretario', 'secretario@cepre.com', '$2y$10$2A.SFvFk9f4E9QYjKMTn4OGNW9DnTBO6pYmNwZ9kT7sFE6XWXwLx2', 'Secretario Académico', 'SECRETARIO', 'ACTIVO', NULL, '2026-09-02 22:25:07');
 
 -- --------------------------------------------------------
@@ -737,6 +770,14 @@ ALTER TABLE `condiciones_matricula`
 ALTER TABLE `configuracion_sistema`
   ADD PRIMARY KEY (`id_config`),
   ADD UNIQUE KEY `clave` (`clave`);
+
+--
+-- Indices de la tabla `consultas_contacto`
+--
+ALTER TABLE `consultas_contacto`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_consultas_contacto_estado` (`estado`),
+  ADD KEY `idx_consultas_contacto_fecha` (`fecha_registro`);
 
 --
 -- Indices de la tabla `domicilios`
@@ -857,7 +898,7 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `archivos_matricula`
 --
 ALTER TABLE `archivos_matricula`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `auditoria`
@@ -884,6 +925,12 @@ ALTER TABLE `configuracion_sistema`
   MODIFY `id_config` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
+-- AUTO_INCREMENT de la tabla `consultas_contacto`
+--
+ALTER TABLE `consultas_contacto`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT de la tabla `domicilios`
 --
 ALTER TABLE `domicilios`
@@ -893,19 +940,19 @@ ALTER TABLE `domicilios`
 -- AUTO_INCREMENT de la tabla `estudiantes`
 --
 ALTER TABLE `estudiantes`
-  MODIFY `id_estudiante` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_estudiante` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `informacion_academica`
 --
 ALTER TABLE `informacion_academica`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `matriculas`
 --
 ALTER TABLE `matriculas`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `modalidades_clase`
@@ -941,7 +988,7 @@ ALTER TABLE `sectores`
 -- AUTO_INCREMENT de la tabla `tipos_archivo`
 --
 ALTER TABLE `tipos_archivo`
-  MODIFY `id` tinyint(3) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` tinyint(3) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `turnos`

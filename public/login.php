@@ -6,8 +6,8 @@ require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../config/auth.php';
 
 startSession();
-if (isAuthenticated()) {
-    header('Location: /cepre_untels/public/');
+if (isAuthenticated() && isAdmin()) {
+    header('Location: /cepre_untels/public/reportes.php');
     exit;
 }
 
@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ];
             database()->prepare('UPDATE usuarios SET ultimo_acceso = CURRENT_TIMESTAMP WHERE id_usuario = :id')
                 ->execute(['id' => $user['id_usuario']]);
-            header('Location: /cepre_untels/public/');
+            header('Location: /cepre_untels/public/reportes.php');
             exit;
         }
 

@@ -14,18 +14,20 @@ final class MatriculaController
         $errorMessage = null;
         $registroExitoso = false;
         $numeroRegistrado = null;
+        $matriculaRegistrada = null;
 
         try {
             $model = new MatriculaModel();
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 verifyCsrfToken($_POST['csrf_token'] ?? null);
-                $numeroRegistrado = $model->registrar($_POST, $_FILES);
-                header('Location: /cepre_untels/public/?registrado=1&numero=' . urlencode($numeroRegistrado));
+                $registro = $model->registrar($_POST, $_FILES);
+                header('Location: /cepre_untels/public/test_index.php?registrado=1&matricula_id=' . (int) $registro['matricula_id'] . '&numero=' . urlencode($registro['codigo_alumno']));
                 exit;
             }
 
             $registroExitoso = ($_GET['registrado'] ?? '') === '1';
             $numeroRegistrado = $registroExitoso ? (string) ($_GET['numero'] ?? '') : null;
+            $matriculaRegistrada = $registroExitoso ? (int) ($_GET['matricula_id'] ?? 0) : null;
             $catalogos = $model->catalogos();
             $numeroMatricula = $model->siguienteNumero();
             $turnoRegularId = (int) ($catalogos['turnos'][0]['id'] ?? 0);
@@ -48,6 +50,12 @@ final class MatriculaController
             } catch (Throwable) {
                 $catalogos = [];
             }
+        }
+
+        if ($registroExitoso && $matriculaRegistrada > 0) {
+            $ficha = $model->fichaEstudiante($matriculaRegistrada);
+            require __DIR__ . '/../views/matricula/ficha-confirmacion.php';
+            return;
         }
 
         require __DIR__ . '/../views/matricula/formulario.php';

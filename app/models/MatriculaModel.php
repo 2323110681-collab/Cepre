@@ -113,6 +113,11 @@ final class MatriculaModel
         $daily = $query('DATE(m.fecha_registro) AS fecha, COUNT(*) AS total', 'GROUP BY DATE(m.fecha_registro)', 'ORDER BY fecha');
         $dailyByCareer = $query('DATE(m.fecha_registro) AS fecha, COALESCE(c.nombre_carrera, "No registrado") AS carrera, COUNT(*) AS total', 'GROUP BY DATE(m.fecha_registro), c.nombre_carrera', 'ORDER BY fecha, total DESC, carrera');
         $dailyBySector = $query('DATE(m.fecha_registro) AS fecha, COALESCE(s.nombre, "No registrado") AS sector, COUNT(*) AS total', 'GROUP BY DATE(m.fecha_registro), s.nombre', 'ORDER BY fecha, total DESC');
+        $students = $query('m.numero, e.codigo_estudiante,
+                    CONCAT(e.apellido_paterno, " ", e.apellido_materno, ", ", e.nombres) AS estudiante,
+                    COALESCE(m.medio_pago, "No registrado") AS medio_pago,
+                    COALESCE(m.codigo_voucher, "No registrado") AS codigo_voucher,
+                    m.fecha_registro', '', 'ORDER BY m.fecha_registro DESC, estudiante');
         $cumulative = 0;
         $dailyIndex = [];
         foreach ($daily as &$row) {
@@ -150,6 +155,7 @@ final class MatriculaModel
             'por_distrito' => $this->districtReport($query('COALESCE(NULLIF(e.distrito_actual, ""), "No registrado") AS etiqueta, COUNT(*) AS total', 'GROUP BY e.distrito_actual', 'ORDER BY total DESC, etiqueta')),
             'por_sector' => $query('COALESCE(s.nombre, "No registrado") AS etiqueta, COUNT(*) AS total', 'GROUP BY s.nombre', 'ORDER BY total DESC, etiqueta'),
             'por_conocimiento' => $query('COALESCE(NULLIF(ia.como_se_entero_cepre, ""), "No registrado") AS etiqueta, COUNT(*) AS total', 'GROUP BY ia.como_se_entero_cepre', 'ORDER BY total DESC, etiqueta'),
+            'estudiantes' => $students,
         ];
     }
 
@@ -219,6 +225,7 @@ final class MatriculaModel
         $statement = $this->connection->prepare(
                 'SELECT m.id AS matricula_id, m.numero, m.estado, m.fecha_registro,
                     m.carrera_id, m.modalidad_clase_id, m.condicion_id, m.turno_id,
+                    m.medio_pago, m.codigo_voucher,
                     e.*, c.nombre_carrera, cm.nombre AS condicion_nombre,
                     t.nombre AS turno_nombre, mc.nombre AS modalidad_nombre,
                     ia.anio_conclusion_secundaria, ia.pais AS pais_estudios,
@@ -309,6 +316,15 @@ final class MatriculaModel
         if (!in_array($conditionId, [1, 2], true) || $virtualId < 1 || (int) ($data['modalidad_clase_id'] ?? 0) !== $virtualId) {
             throw new InvalidArgumentException('Seleccione una modalidad de ingreso y modalidad de clase válidas.');
         }
+        $paymentMethods = ['CAJA_UNTELS', 'BANCO_NACION', 'OTRO'];
+        $paymentMethod = (string) ($data['medio_pago'] ?? '');
+        if (!in_array($paymentMethod, $paymentMethods, true)) {
+            throw new InvalidArgumentException('Seleccione un medio de pago válido.');
+        }
+        if (in_array($paymentMethod, ['CAJA_UNTELS', 'BANCO_NACION'], true)
+            && trim((string) ($data['codigo_voucher'] ?? '')) === '') {
+            throw new InvalidArgumentException('Ingrese el código del voucher.');
+        }
         $this->connection->beginTransaction();
         try {
             $lookup = $this->connection->prepare('SELECT estudiante_id FROM matriculas WHERE id = :id AND estado <> "ANULADA"');
@@ -338,11 +354,15 @@ final class MatriculaModel
 
             $registration = $this->connection->prepare(
                 'UPDATE matriculas SET modalidad_clase_id = :modalidad,
-                 condicion_id = :condicion, turno_id = :turno WHERE id = :id'
+                 condicion_id = :condicion, turno_id = :turno,
+                 medio_pago = :medio_pago, codigo_voucher = :codigo_voucher WHERE id = :id'
             );
             $registration->execute([
                 'modalidad' => (int) $data['modalidad_clase_id'],
-                'condicion' => (int) $data['condicion_id'], 'turno' => (int) $data['turno_id'], 'id' => $matriculaId,
+                'condicion' => (int) $data['condicion_id'], 'turno' => (int) $data['turno_id'],
+                'medio_pago' => trim((string) ($data['medio_pago'] ?? '')) ?: null,
+                'codigo_voucher' => trim((string) ($data['codigo_voucher'] ?? '')) ?: null,
+                'id' => $matriculaId,
             ]);
 
             $academic = $this->connection->prepare(
@@ -382,7 +402,7 @@ final class MatriculaModel
         }
     }
 
-    public function registrar(array $data, array $files): string
+    public function registrar(array $data, array $files): array
     {
         $this->validateData($data);
         $this->connection->beginTransaction();
@@ -455,8 +475,8 @@ final class MatriculaModel
                 throw new InvalidArgumentException('El semestre seleccionado no es válido.');
             }
             $matriculaStatement = $this->connection->prepare(
-                'INSERT INTO matriculas (numero, estudiante_id, periodo_id, condicion_id, turno_id, modalidad_clase_id, carrera_id, estado)
-                 VALUES (:numero, :estudiante, :periodo, :condicion, :turno, :modalidad, :carrera, "CONFIRMADA")'
+                'INSERT INTO matriculas (numero, estudiante_id, periodo_id, condicion_id, turno_id, modalidad_clase_id, carrera_id, medio_pago, codigo_voucher, estado)
+                 VALUES (:numero, :estudiante, :periodo, :condicion, :turno, :modalidad, :carrera, :medio_pago, :codigo_voucher, "CONFIRMADA")'
             );
             $matriculaStatement->execute([
                 'numero' => $numero,
@@ -466,6 +486,8 @@ final class MatriculaModel
                 'turno' => (int) ($data['turno_id'] ?? 0),
                 'modalidad' => (int) ($data['modalidad_clase_id'] ?? 1),
                 'carrera' => (int) $data['carrera_id'],
+                'medio_pago' => trim((string) ($data['medio_pago'] ?? '')) ?: null,
+                'codigo_voucher' => trim((string) ($data['codigo_voucher'] ?? '')) ?: null,
             ]);
             $matriculaId = (int) $this->connection->lastInsertId();
 
@@ -508,7 +530,10 @@ final class MatriculaModel
             $this->storeFiles($files, $matriculaId, !empty($data['tiene_certificado_discapacidad']));
 
             $this->connection->commit();
-            return $codigoAlumno;
+            return [
+                'codigo_alumno' => $codigoAlumno,
+                'matricula_id' => $matriculaId,
+            ];
         } catch (Throwable $exception) {
             $this->connection->rollBack();
             throw $exception;
@@ -542,6 +567,15 @@ final class MatriculaModel
         if (($data['como_se_entero_cepre'] ?? '') === 'otro'
             && trim((string) ($data['especificar_como_se_entero'] ?? '')) === '') {
             throw new InvalidArgumentException('Especifique cómo se enteró de la CEPRE UNTELS.');
+        }
+        $paymentMethods = ['CAJA_UNTELS', 'BANCO_NACION', 'OTRO'];
+        $paymentMethod = (string) ($data['medio_pago'] ?? '');
+        if (!in_array($paymentMethod, $paymentMethods, true)) {
+            throw new InvalidArgumentException('Seleccione un medio de pago válido.');
+        }
+        if (in_array($paymentMethod, ['CAJA_UNTELS', 'BANCO_NACION'], true)
+            && trim((string) ($data['codigo_voucher'] ?? '')) === '') {
+            throw new InvalidArgumentException('Ingrese el código del voucher.');
         }
         $date = DateTimeImmutable::createFromFormat('!Y-m-d', (string) $data['fecha_nacimiento']);
         if (!$date || $date->format('Y-m-d') !== $data['fecha_nacimiento'] || $date > new DateTimeImmutable('today')) {

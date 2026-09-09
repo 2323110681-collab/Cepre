@@ -127,6 +127,8 @@ function fichaValue(array $ficha, string $key): string
                             <div><dt>Modalidad</dt><dd><?= fichaValue($ficha, 'modalidad_nombre') ?></dd></div>
                             <div><dt>Condición</dt><dd><?= fichaValue($ficha, 'condicion_nombre') ?></dd></div>
                             <div><dt>Turno</dt><dd><?= fichaValue($ficha, 'turno_nombre') ?></dd></div>
+                            <div><dt>Medio de pago</dt><dd><?= fichaValue($ficha, 'medio_pago') ?></dd></div>
+                            <div><dt>Código de voucher</dt><dd><?= fichaValue($ficha, 'codigo_voucher') ?></dd></div>
                             <div><dt>Estado</dt><dd><?= fichaValue($ficha, 'estado') ?></dd></div>
                             <div><dt>Fecha de registro</dt><dd><?= fichaValue($ficha, 'fecha_registro') ?></dd></div>
                             <div><dt>Departamento actual</dt><dd><?= fichaValue($ficha, 'departamento_actual') ?></dd></div>

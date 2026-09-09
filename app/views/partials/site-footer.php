@@ -19,3 +19,4 @@
     </div>
     <div class="site-footer__bottom">© <?= date('Y') ?> Todos los derechos reservados por Universidad Nacional Tecnológica de Lima Sur</div>
 </footer>
+<script src="/cepre_untels/public/js/main.js?v=20260917" defer></script>
